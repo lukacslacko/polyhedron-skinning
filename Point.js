@@ -25,7 +25,6 @@ var Point = /** @class */ (function () {
         sprite.position.y = this.y * 1.05;
         sprite.position.z = this.z * 1.05;
         scene.add(sprite);
-        console.log("added point " + this.name);
     };
     return Point;
 }());
