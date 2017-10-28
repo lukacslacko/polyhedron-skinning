@@ -12,21 +12,30 @@ var Polyhedron = /** @class */ (function () {
             }
         }
     }
+    Polyhedron.prototype.point = function (name) {
+        for (var _i = 0, _a = this.points; _i < _a.length; _i++) {
+            var p = _a[_i];
+            if (p.name == name)
+                return p;
+        }
+        return null;
+    };
     Polyhedron.prototype.hide = function (scene) {
         for (var _i = 0, _a = this.faces; _i < _a.length; _i++) {
             var face = _a[_i];
             face.hide(scene);
         }
     };
-    Polyhedron.prototype.render = function (scene) {
+    Polyhedron.prototype.render = function (scene, renderLabels) {
         for (var _i = 0, _a = this.faces; _i < _a.length; _i++) {
             var face = _a[_i];
             face.render(scene);
         }
-        for (var _b = 0, _c = this.points; _b < _c.length; _b++) {
-            var p = _c[_b];
-            p.render(scene);
-        }
+        if (renderLabels)
+            for (var _b = 0, _c = this.points; _b < _c.length; _b++) {
+                var p = _c[_b];
+                p.render(scene);
+            }
     };
     return Polyhedron;
 }());

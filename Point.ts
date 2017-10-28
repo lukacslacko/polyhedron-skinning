@@ -1,13 +1,13 @@
 class Point {
     constructor(
-        public x : number, public y : number, public z : number, 
-        public name : string) {}
+        public x: number, public y: number, public z: number, 
+        public name: string) {}
 
-    asVector3() : any {
+    asVector3(): any {
         return new THREE.Vector3(this.x, this.y, this.z);
     }
 
-    render(scene : any) : void {
+    render(scene: any): void {
         var canvas = document.createElement("canvas");
         canvas.width = 64;
         canvas.height = 64;

@@ -12,14 +12,7 @@
     </head>
     
     <body>
-      <form>
-        <label><input type="radio" name="poly" value="tetrahedron1" onclick="renderPoly(this);"/> Tetrahedron1 </label> <br>
-        <label><input type="radio" name="poly" value="tetrahedron2" onclick="renderPoly(this);"/> Tetrahedron2 </label> <br>
-        <label><input type="radio" name="poly" value="cube" onclick="renderPoly(this);" checked="✓"/> Cube </label> <br>
-        <label><input type="radio" name="poly" value="octahedron" onclick="renderPoly(this)"/> Octahedron </label> <br>
-        <label><input type="radio" name="poly" value="dodecahedron" onclick="renderPoly(this)"/> Dodecahedron </label> <br>
-        <label><input type="radio" name="poly" value="icosahedron" onclick="renderPoly(this)"/> Icosahedron </label> <br>
-      </form>
+      <label>Render labels <input type="checkbox" onclick="setRenderLabels(this)"></label><br>
       <canvas id="cnv" 
         width="500"
         height="500"
@@ -37,6 +30,7 @@
       <script src="Face.js"></script>
       <script src="Polyhedron.js"></script>
       <script src="Icosahedron.js"></script>
+      <script src="DrawSkin.js"></script>
       <script src="Main.js"></script>
     </body>
 </html>

@@ -1,4 +1,4 @@
-function icosahedron() : Polyhedron {
+function icosahedron(): Polyhedron {
     var f = (Math.sqrt(5) + 1) / 2;
     var P = new Point(0, 1, f, "P");
     var A = new Point(-f, 0, 1, "A");

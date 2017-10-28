@@ -1,6 +1,6 @@
 class Polyhedron {
-    private points : Point[];
-    constructor(public faces : Face[]) {
+    private points: Point[];
+    constructor(public faces: Face[]) {
         this.points = [];
         for (let face of faces) {
             for (let p of face.points) {
@@ -11,17 +11,22 @@ class Polyhedron {
         }
     }
 
-    hide(scene : any) : void {
+    point(name: string): Point {
+        for (let p of this.points) if (p.name == name) return p;
+        return null;
+    }
+
+    hide(scene: any): void {
         for (let face of this.faces) {
             face.hide(scene);
         }
     }
 
-    render(scene : any) : void {
+    render(scene: any, renderLabels: boolean): void {
         for (let face of this.faces) {
             face.render(scene);
         }
-        for (let p of this.points) {
+        if (renderLabels) for (let p of this.points) {
             p.render(scene);
         }
     }

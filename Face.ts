@@ -1,9 +1,9 @@
 class Face {
-    constructor(public points : Point[]) {}
+    constructor(public points: Point[]) {}
 
-    hide(scene : any) : void {}
+    hide(scene: any): void {}
 
-    render(scene : any) : void {
+    render(scene: any): void {
         var geometry = new THREE.Geometry();
         for (let p of this.points) {
             geometry.vertices.push(p.asVector3());
