@@ -4,7 +4,6 @@ var GraphVertex = /** @class */ (function () {
         this.fixed = fixed;
         this.x = x;
         this.y = y;
-        this.solved = !fixed;
     }
     return GraphVertex;
 }());

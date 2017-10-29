@@ -23,6 +23,23 @@ var Graph = /** @class */ (function () {
         this.vertices.push(v);
         return v;
     };
+    Graph.prototype.neighbors = function (v) {
+        var result = new Array();
+        for (var _i = 0, _a = this.faces; _i < _a.length; _i++) {
+            var f = _a[_i];
+            var i = f.vertices.indexOf(v);
+            if (i == -1)
+                continue;
+            var n = f.vertices.length;
+            var p = f.vertices[(i + 1) % n];
+            var q = f.vertices[(n + i - 1) % n];
+            if (result.indexOf(p) == -1)
+                result.push(p);
+            if (result.indexOf(q) == -1)
+                result.push(q);
+        }
+        return result;
+    };
     return Graph;
 }());
 //# sourceMappingURL=Graph.js.map

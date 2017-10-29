@@ -23,4 +23,18 @@ class Graph {
         this.vertices.push(v);
         return v;
     }
+
+    neighbors(v: GraphVertex): GraphVertex[] {
+        var result = new Array<GraphVertex>();
+        for (let f of this.faces) {
+            var i = f.vertices.indexOf(v);
+            if (i == -1) continue;
+            var n = f.vertices.length;
+            var p = f.vertices[(i+1) % n];
+            var q = f.vertices[(n+i-1) % n];
+            if (result.indexOf(p) == -1) result.push(p);
+            if (result.indexOf(q) == -1) result.push(q);
+        }
+        return result;
+    }
 }

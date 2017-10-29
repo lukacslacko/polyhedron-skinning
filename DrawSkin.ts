@@ -106,6 +106,46 @@ class Skin {
         }
     }
 
+    solveCoordinates(): void {
+        var unsolvedVertices = new Array<GraphVertex>();
+        for (let v of this.graph.vertices) {
+            if (!v.fixed) unsolvedVertices.push(v);
+        }
+        var n = unsolvedVertices.length;
+        var x_c = new Array<number>(n);
+        var x_a = new Array<number>(n*n);
+        var y_c = new Array<number>(n);
+        var y_a = new Array<number>(n*n);
+        for (var i = 0; i < n; ++i) {
+            var neighbors = this.graph.neighbors(unsolvedVertices[i]);
+            var d = neighbors.length;
+            var x_sum = 0;
+            var y_sum = 0;
+            for (var j = 0; j < n; ++j) {
+                x_a[n*i+j] = 0;
+                y_a[n*i+j] = 0;
+            }
+            x_c[i] = 0;
+            y_c[i] = 0;
+            for (let p of neighbors) {
+                if (p.fixed) {
+                    x_c[i] += p.x / d;
+                    y_c[i] += p.y / d;
+                } else {
+                    var idx = unsolvedVertices.indexOf(p);
+                    x_a[n*i + idx] = 1/d;
+                    y_a[n*i + idx] = 1/d;
+                }
+            }
+        }
+        var xs = SolveLinear(x_c, x_a);
+        var ys = SolveLinear(y_c, y_a);
+        for (var i = 0; i < n; ++i) {
+            unsolvedVertices[i].x = xs[i];
+            unsolvedVertices[i].y = ys[i];
+        }
+    }
+
     draw(): void {
         for (let f of this.graph.faces) {
             for (var i = 0; i < f.vertices.length; ++i) {

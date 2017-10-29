@@ -6,6 +6,7 @@ reRender();
 
 var skin = new Skin(<HTMLCanvasElement> document.getElementById("skin"), icosa, ["P", "C"], ["P", "A", "d", "p"], ["p", "b"]);
 skin.buildGraph();
+skin.solveCoordinates();
 skin.draw();
 
 function reRender() {

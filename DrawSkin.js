@@ -99,6 +99,49 @@ var Skin = /** @class */ (function () {
             }
         }
     };
+    Skin.prototype.solveCoordinates = function () {
+        var unsolvedVertices = new Array();
+        for (var _i = 0, _a = this.graph.vertices; _i < _a.length; _i++) {
+            var v = _a[_i];
+            if (!v.fixed)
+                unsolvedVertices.push(v);
+        }
+        var n = unsolvedVertices.length;
+        var x_c = new Array(n);
+        var x_a = new Array(n * n);
+        var y_c = new Array(n);
+        var y_a = new Array(n * n);
+        for (var i = 0; i < n; ++i) {
+            var neighbors = this.graph.neighbors(unsolvedVertices[i]);
+            var d = neighbors.length;
+            var x_sum = 0;
+            var y_sum = 0;
+            for (var j = 0; j < n; ++j) {
+                x_a[n * i + j] = 0;
+                y_a[n * i + j] = 0;
+            }
+            x_c[i] = 0;
+            y_c[i] = 0;
+            for (var _b = 0, neighbors_1 = neighbors; _b < neighbors_1.length; _b++) {
+                var p = neighbors_1[_b];
+                if (p.fixed) {
+                    x_c[i] += p.x / d;
+                    y_c[i] += p.y / d;
+                }
+                else {
+                    var idx = unsolvedVertices.indexOf(p);
+                    x_a[n * i + idx] = 1 / d;
+                    y_a[n * i + idx] = 1 / d;
+                }
+            }
+        }
+        var xs = SolveLinear(x_c, x_a);
+        var ys = SolveLinear(y_c, y_a);
+        for (var i = 0; i < n; ++i) {
+            unsolvedVertices[i].x = xs[i];
+            unsolvedVertices[i].y = ys[i];
+        }
+    };
     Skin.prototype.draw = function () {
         for (var _i = 0, _a = this.graph.faces; _i < _a.length; _i++) {
             var f = _a[_i];
