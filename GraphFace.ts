@@ -1,3 +1,4 @@
 class GraphFace {
-    constructor(public vertices: GraphVertex[]) {}
+    public vertices: GraphVertex[];
+    constructor() {}
 }

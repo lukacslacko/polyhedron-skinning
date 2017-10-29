@@ -18,11 +18,23 @@ class Face {
 
     hasEdge(edge: Segment): boolean {
         var points = this.points;
-        for (var i = 0; i < points.size(); ++i) {
-            var j = (i+1) % points.size();
+        for (var i = 0; i < points.length; ++i) {
+            var j = (i+1) % points.length;
             if (edge.from == points[i] && edge.to == points[j]) return true;
             if (edge.from == points[j] && edge.to == points[i]) return true;
         }
         return false;
+    }
+
+    otherVertex(vertex: Point, edge: Segment): Point {
+        var points = this.points;
+        for (var i = 0; i < points.length; ++i) {
+            var j = (i+1) % points.length;
+            if (edge.from == points[i] && edge.to == points[j]) continue;
+            if (edge.from == points[j] && edge.to == points[i]) continue;
+            if (vertex == points[i]) return points[j];
+            if (vertex == points[j]) return points[i];
+        }        
+        return undefined;
     }
 }

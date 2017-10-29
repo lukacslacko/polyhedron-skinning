@@ -5,6 +5,9 @@ class Skin {
     private top: Point[];
     private bottom: Point[];
     private side: Point[];
+    private path: Point[];
+    private graph: Graph;
+    private facesAdded: Face[];
 
     constructor(
         cnv: HTMLCanvasElement,
@@ -29,6 +32,51 @@ class Skin {
         for (let name of names) {
             points.push(poly.point(name));
         }
+    }
+
+    private addFace(face: Face, side: number) {
+        this.facesAdded.push(face);
+        var graphFace = new GraphFace();
+        for (let p of face.points) {
+            var i = this.path.indexOf(p);
+            if (i > -1) {
+                var name = p.name;
+                if (i > 0 && i < this.path.length - 1) {
+                    name += (side < 0 ? "<" : ">");
+                }
+                var x = 0;
+                var y = 0;
+                if (i < this.top.length) {
+                    x = this.top.length - 1 + side * i;
+                } else if (i < this.top.length + this.side.length - 1) {
+                    x = (side + 1) * (this.top.length - 1);
+                    y = i - this.top.length + 1;
+                } else {
+                    y = this.side.length;
+                    x = this.top.length - 1 + side * (this.path.length - 1 - i);
+                }
+                graphFace.vertices.push(this.graph.makeFixedVertex(name, x, y));
+            } else {
+                graphFace.vertices.push(this.graph.makeVertex(p.name));
+            }
+        }
+        this.graph.faces.push(graphFace);
+    }
+
+    private buildGraph(): void {
+        this.path = new Array<Point>();
+        this.facesAdded = new Array<Face>();
+        this.graph = new Graph();
+        for (var i = this.top.length - 1; i > 0; --i) this.path.push(this.top[i]);
+        for (var i = 0; i < this.side.length; ++i) this.path.push(this.side[i]);
+        for (var i = 1; i < this.bottom.length; ++i) this.path.push(this.bottom[i]);
+        var poly = this.poly;
+        var firstEdge = new Segment(this.path[0], this.path[1]);
+        var left = poly.opposite(firstEdge, null);
+        var right = poly.opposite(firstEdge, left);
+        this.addFace(left, -1);
+        this.addFace(right, 1);
+        
     }
 
     draw(): void {

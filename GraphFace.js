@@ -1,6 +1,5 @@
 var GraphFace = /** @class */ (function () {
-    function GraphFace(vertices) {
-        this.vertices = vertices;
+    function GraphFace() {
     }
     return GraphFace;
 }());
