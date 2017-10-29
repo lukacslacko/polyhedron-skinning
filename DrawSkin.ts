@@ -34,7 +34,7 @@ class Skin {
         }
     }
 
-    private addFace(face: Face, side: number) {
+    private addFace(face: Face, side: number): void {
         console.log("Adding face " + face.describe() + " side " + side);
         this.facesAdded.push(face);
         var graphFace = new GraphFace();
@@ -99,6 +99,11 @@ class Skin {
                 this.addFace(right, 1);    
             }
         } while (pathIndex < this.path.length - 1);
+        for (let f of poly.faces) {
+            if (this.facesAdded.indexOf(f) == -1) {
+                this.addFace(f, 0);
+            }
+        }
     }
 
     draw(): void {

@@ -92,6 +92,12 @@ var Skin = /** @class */ (function () {
                 this.addFace(right, 1);
             }
         } while (pathIndex < this.path.length - 1);
+        for (var _i = 0, _a = poly.faces; _i < _a.length; _i++) {
+            var f = _a[_i];
+            if (this.facesAdded.indexOf(f) == -1) {
+                this.addFace(f, 0);
+            }
+        }
     };
     Skin.prototype.draw = function () {
         for (var _i = 0, _a = this.graph.faces; _i < _a.length; _i++) {
