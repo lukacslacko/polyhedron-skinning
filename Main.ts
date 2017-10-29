@@ -4,7 +4,10 @@ var renderLabels = false;
 
 reRender();
 
-var skin = new Skin(<HTMLCanvasElement> document.getElementById("skin"), icosa, ["P", "C"], ["P", "A", "d", "p"], ["p", "b"]);
+var skin = new Skin(
+    <HTMLCanvasElement> document.getElementById("skin"),
+    icosa,
+    ["P", "B", "e"], ["P", "A", "c", "p"], ["p", "b", "D"]);
 skin.buildGraph();
 skin.solveCoordinates();
 skin.draw();

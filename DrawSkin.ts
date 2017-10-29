@@ -26,6 +26,8 @@ class Skin {
         this.dx = w / (2 * this.top.length);
         this.dy = h / (this.side.length + 1);
         this.ctx = cnv.getContext("2d");
+        this.ctx.font = "18px Arial";
+        this.ctx.fillStyle = "red";
     }
 
     private find(names: string[], points: Point[], poly: Polyhedron): void {
@@ -169,10 +171,10 @@ class Skin {
         this.ctx.ellipse((1+x2)*this.dx, (1+y2)*this.dy, 2, 2, 0, 0, 360);
         this.ctx.stroke();
         this.ctx.beginPath();
-        this.ctx.strokeText(p1, 4+(1+x1)*this.dx, (1+y1)*this.dy);
+        this.ctx.fillText(p1, 4+(1+x1)*this.dx, (1+y1)*this.dy);
         this.ctx.stroke();
         this.ctx.beginPath();
-        this.ctx.strokeText(p2, 4+(1+x2)*this.dx, (1+y2)*this.dy);
+        this.ctx.fillText(p2, 4+(1+x2)*this.dx, (1+y2)*this.dy);
         this.ctx.stroke();
     }
 }
