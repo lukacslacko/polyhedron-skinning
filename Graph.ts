@@ -24,6 +24,13 @@ class Graph {
         return v;
     }
 
+    find(name: string): GraphVertex {
+        for (let v of this.vertices) {
+            if (v.name == name) return v;
+        }
+        return undefined;
+    }
+
     neighbors(v: GraphVertex): GraphVertex[] {
         var result = new Array<GraphVertex>();
         for (let f of this.faces) {

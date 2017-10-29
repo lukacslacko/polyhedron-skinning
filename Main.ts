@@ -1,4 +1,4 @@
-var icosa = icosahedron();
+var icosahedron = icosahedronPoly();
 
 var renderLabels = false;
 
@@ -6,14 +6,15 @@ reRender();
 
 var skin = new Skin(
     <HTMLCanvasElement> document.getElementById("skin"),
-    icosa,
-    ["P", "B", "e"], ["P", "A", "c", "p"], ["p", "b", "D"]);
+    icosahedron,
+    icosahedronPath());
 skin.buildGraph();
 skin.solveCoordinates();
+skin.cutAlong(icosahedronCuts());
 skin.draw();
 
 function reRender() {
-    icosa.render(scene, renderLabels);
+    icosahedron.render(scene, renderLabels);
     doRender();
 }
 

@@ -23,6 +23,14 @@ var Graph = /** @class */ (function () {
         this.vertices.push(v);
         return v;
     };
+    Graph.prototype.find = function (name) {
+        for (var _i = 0, _a = this.vertices; _i < _a.length; _i++) {
+            var v = _a[_i];
+            if (v.name == name)
+                return v;
+        }
+        return undefined;
+    };
     Graph.prototype.neighbors = function (v) {
         var result = new Array();
         for (var _i = 0, _a = this.faces; _i < _a.length; _i++) {

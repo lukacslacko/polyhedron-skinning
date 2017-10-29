@@ -8,19 +8,18 @@ class Skin {
     private path: Point[];
     private graph: Graph;
     private facesAdded: Face[];
+    private cuts: Array<Array<string>>;
 
     constructor(
         cnv: HTMLCanvasElement,
         private poly: Polyhedron,
-        topNames: string[], 
-        sideNames: string[],
-        bottomNames: string[]) {
+        pathNames: Array<Array<string>>) {
         this.top = [];
         this.side = [];
         this.bottom = [];
-        this.find(topNames, this.top, poly);
-        this.find(sideNames, this.side, poly);
-        this.find(bottomNames, this.bottom, poly);
+        this.find(pathNames[0], this.top, poly);
+        this.find(pathNames[1], this.side, poly);
+        this.find(pathNames[2], this.bottom, poly);
         var w = cnv.width;
         var h = cnv.height;
         this.dx = w / (2 * this.top.length);
@@ -148,18 +147,31 @@ class Skin {
         }
     }
 
+    cutAlong(cuts: Array<Array<string>>): void {
+        this.cuts = cuts;
+    }
+
     draw(): void {
         for (let f of this.graph.faces) {
             for (var i = 0; i < f.vertices.length; ++i) {
                 var j = (i+1) % f.vertices.length;
-                this.line(
-                    f.vertices[j].x, f.vertices[j].y, f.vertices[j].name,
-                    f.vertices[i].x, f.vertices[i].y, f.vertices[i].name);
+                this.line(f.vertices[j], f.vertices[i]);
+            }
+        }
+        this.ctx.strokeStyle = "lightgreen";
+        this.ctx.lineWidth = 3;
+        for (let cut of this.cuts) {
+            for (var i = 0; i < cut.length - 1; ++i) {
+                this.line(this.graph.find(cut[i]), this.graph.find(cut[i+1]));
             }
         }
     }
 
-    private line(x1: number, y1: number, p1: string, x2: number, y2: number, p2: string) {
+    private line(a: GraphVertex, b: GraphVertex) {
+        var x1 = a.x;
+        var x2 = b.x;
+        var y1 = a.y;
+        var y2 = b.y;
         this.ctx.beginPath();
         this.ctx.moveTo((1+x1)*this.dx, (1+y1)*this.dy);
         this.ctx.lineTo((1+x2)*this.dx, (1+y2)*this.dy);
@@ -171,10 +183,10 @@ class Skin {
         this.ctx.ellipse((1+x2)*this.dx, (1+y2)*this.dy, 2, 2, 0, 0, 360);
         this.ctx.stroke();
         this.ctx.beginPath();
-        this.ctx.fillText(p1, 4+(1+x1)*this.dx, (1+y1)*this.dy);
+        this.ctx.fillText(a.name, 4+(1+x1)*this.dx, (1+y1)*this.dy);
         this.ctx.stroke();
         this.ctx.beginPath();
-        this.ctx.fillText(p2, 4+(1+x2)*this.dx, (1+y2)*this.dy);
+        this.ctx.fillText(b.name, 4+(1+x2)*this.dx, (1+y2)*this.dy);
         this.ctx.stroke();
     }
 }
