@@ -40,7 +40,7 @@ var Skin = /** @class */ (function () {
                     y = i - this.top.length + 1;
                 }
                 else {
-                    y = this.side.length;
+                    y = this.side.length - 1;
                     x = this.top.length - 1 + side * (this.path.length - 1 - i);
                 }
                 graphFace.vertices.push(this.graph.makeFixedVertex(name, x, y));
@@ -65,13 +65,32 @@ var Skin = /** @class */ (function () {
         var firstEdge = new Segment(this.path[0], this.path[1]);
         var left = poly.opposite(firstEdge, null);
         var right = poly.opposite(firstEdge, left);
+        var leftEdge = firstEdge;
+        var rightEdge = firstEdge;
         this.addFace(left, -1);
         this.addFace(right, 1);
         var pathIndex = 1;
         do {
-            var nextPoint = this.path[pathIndex];
+            var prevPoint = this.path[pathIndex];
             ++pathIndex;
-        } while (pathIndex < this.path.length);
+            var nextPoint = this.path[pathIndex];
+            while (true) {
+                var leftOther = left.otherVertex(prevPoint, leftEdge);
+                leftEdge = new Segment(prevPoint, leftOther);
+                if (leftOther == nextPoint)
+                    break;
+                left = poly.opposite(leftEdge, left);
+                this.addFace(left, -1);
+            }
+            while (true) {
+                var rightOther = right.otherVertex(prevPoint, rightEdge);
+                rightEdge = new Segment(prevPoint, rightOther);
+                if (rightOther == nextPoint)
+                    break;
+                right = poly.opposite(rightEdge, right);
+                this.addFace(right, -1);
+            }
+        } while (pathIndex < this.path.length - 1);
     };
     Skin.prototype.draw = function () {
         for (var _i = 0, _a = this.graph.faces; _i < _a.length; _i++) {
