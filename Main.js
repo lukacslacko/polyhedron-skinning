@@ -1,13 +1,14 @@
 var icosahedron = icosahedronPoly();
+var truncatedIcosahedron = truncatedIcosahedronPoly();
 var renderLabels = false;
 reRender();
-var skin = new Skin(document.getElementById("skin"), icosahedron, icosahedronPath());
+var skin = new Skin(document.getElementById("skin"), truncatedIcosahedron, truncatedIcosahedronPath());
 skin.buildGraph();
 skin.solveCoordinates();
-skin.cutAlong(icosahedronCuts());
+skin.cutAlong(truncatedIcosahedronCuts());
 skin.draw();
 function reRender() {
-    icosahedron.render(scene, renderLabels);
+    truncatedIcosahedron.render(scene, renderLabels);
     doRender();
 }
 function setRenderLabels(box) {

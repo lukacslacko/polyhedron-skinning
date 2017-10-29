@@ -28,6 +28,7 @@ var Polyhedron = /** @class */ (function () {
             if (f.hasEdge(edge))
                 return f;
         }
+        console.log("COuld not find opposite of " + face.describe() + " through edge " + edge.describe());
         return undefined;
     };
     Polyhedron.prototype.hide = function (scene) {
