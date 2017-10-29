@@ -42,6 +42,16 @@ var Face = /** @class */ (function () {
         }
         return undefined;
     };
+    Face.prototype.describe = function () {
+        var result = "";
+        for (var _i = 0, _a = this.points; _i < _a.length; _i++) {
+            var p = _a[_i];
+            if (result != "")
+                result += "-";
+            result += p.name;
+        }
+        return result;
+    };
     return Face;
 }());
 //# sourceMappingURL=Face.js.map

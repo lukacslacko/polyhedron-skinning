@@ -20,6 +20,7 @@ var Skin = /** @class */ (function () {
         }
     };
     Skin.prototype.addFace = function (face, side) {
+        console.log("Adding face " + face.describe() + " side " + side);
         this.facesAdded.push(face);
         var graphFace = new GraphFace();
         for (var _i = 0, _a = face.points; _i < _a.length; _i++) {
@@ -88,7 +89,7 @@ var Skin = /** @class */ (function () {
                 if (rightOther == nextPoint)
                     break;
                 right = poly.opposite(rightEdge, right);
-                this.addFace(right, -1);
+                this.addFace(right, 1);
             }
         } while (pathIndex < this.path.length - 1);
     };

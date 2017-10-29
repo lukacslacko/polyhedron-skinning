@@ -35,6 +35,7 @@ class Skin {
     }
 
     private addFace(face: Face, side: number) {
+        console.log("Adding face " + face.describe() + " side " + side);
         this.facesAdded.push(face);
         var graphFace = new GraphFace();
         for (let p of face.points) {
@@ -95,7 +96,7 @@ class Skin {
                 rightEdge = new Segment(prevPoint, rightOther);
                 if (rightOther == nextPoint) break;
                 right = poly.opposite(rightEdge, right);
-                this.addFace(right, -1);    
+                this.addFace(right, 1);    
             }
         } while (pathIndex < this.path.length - 1);
     }

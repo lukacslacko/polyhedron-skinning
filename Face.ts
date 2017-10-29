@@ -37,4 +37,13 @@ class Face {
         }        
         return undefined;
     }
+
+    describe(): string {
+        var result = "";
+        for (let p of this.points) {
+            if (result != "") result += "-";
+            result += p.name;
+        }
+        return result;
+    }
 }
