@@ -7,11 +7,11 @@ class Skin {
     private side: Point[];
 
     constructor(
-        private cnv: HTMLCanvasElement,
+        cnv: HTMLCanvasElement,
         private poly: Polyhedron,
-        private topNames: string[], 
-        private sideNames: string[],
-        private bottomNames: string[]) {
+        topNames: string[], 
+        sideNames: string[],
+        bottomNames: string[]) {
         this.top = [];
         this.side = [];
         this.bottom = [];
@@ -25,7 +25,7 @@ class Skin {
         this.ctx = cnv.getContext("2d");
     }
 
-    find(names: string[], points: Point[], poly: Polyhedron): void {
+    private find(names: string[], points: Point[], poly: Polyhedron): void {
         for (let name of names) {
             points.push(poly.point(name));
         }
@@ -44,7 +44,7 @@ class Skin {
         }
     }
 
-    line(x1: number, y1: number, p1: Point, x2: number, y2: number, p2: Point) {
+    private line(x1: number, y1: number, p1: Point, x2: number, y2: number, p2: Point) {
         this.ctx.beginPath();
         this.ctx.moveTo((1+x1)*this.dx, (1+y1)*this.dy);
         this.ctx.lineTo((1+x2)*this.dx, (1+y2)*this.dy);

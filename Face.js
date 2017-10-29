@@ -16,6 +16,17 @@ var Face = /** @class */ (function () {
         geometry.computeFaceNormals();
         scene.add(new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: 0xbb6622 })));
     };
+    Face.prototype.hasEdge = function (edge) {
+        var points = this.points;
+        for (var i = 0; i < points.size(); ++i) {
+            var j = (i + 1) % points.size();
+            if (edge.from == points[i] && edge.to == points[j])
+                return true;
+            if (edge.from == points[j] && edge.to == points[i])
+                return true;
+        }
+        return false;
+    };
     return Face;
 }());
 //# sourceMappingURL=Face.js.map

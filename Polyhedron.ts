@@ -16,6 +16,14 @@ class Polyhedron {
         return null;
     }
 
+    opposite(edge: Segment, face: Face): Face {
+        for (let f of this.faces) {
+            if (f == face) continue;
+            if (f.hasEdge(edge)) return f;
+        }
+        return undefined;
+    }
+
     hide(scene: any): void {
         for (let face of this.faces) {
             face.hide(scene);

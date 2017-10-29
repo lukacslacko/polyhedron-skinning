@@ -1,10 +1,6 @@
 var Skin = /** @class */ (function () {
     function Skin(cnv, poly, topNames, sideNames, bottomNames) {
-        this.cnv = cnv;
         this.poly = poly;
-        this.topNames = topNames;
-        this.sideNames = sideNames;
-        this.bottomNames = bottomNames;
         this.top = [];
         this.side = [];
         this.bottom = [];

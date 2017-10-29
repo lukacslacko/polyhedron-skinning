@@ -20,6 +20,16 @@ var Polyhedron = /** @class */ (function () {
         }
         return null;
     };
+    Polyhedron.prototype.opposite = function (edge, face) {
+        for (var _i = 0, _a = this.faces; _i < _a.length; _i++) {
+            var f = _a[_i];
+            if (f == face)
+                continue;
+            if (f.hasEdge(edge))
+                return f;
+        }
+        return undefined;
+    };
     Polyhedron.prototype.hide = function (scene) {
         for (var _i = 0, _a = this.faces; _i < _a.length; _i++) {
             var face = _a[_i];
