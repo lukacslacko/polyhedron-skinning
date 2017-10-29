@@ -63,7 +63,7 @@ class Skin {
         this.graph.faces.push(graphFace);
     }
 
-    private buildGraph(): void {
+    buildGraph(): void {
         this.path = new Array<Point>();
         this.facesAdded = new Array<Face>();
         this.graph = new Graph();
@@ -76,23 +76,25 @@ class Skin {
         var right = poly.opposite(firstEdge, left);
         this.addFace(left, -1);
         this.addFace(right, 1);
-        
+        var pathIndex = 1;
+        do {
+            var nextPoint = this.path[pathIndex];
+            ++pathIndex;
+        } while (pathIndex < this.path.length);
     }
 
     draw(): void {
-        for (var i = 1; i < this.side.length; ++i) {
-            this.line(0, i-1, this.side[i-1], 0, i, this.side[i]);
-            this.line(2*this.top.length-2, i-1, this.side[i-1], 2*this.top.length-2, i, this.side[i]);
-        } 
-        for (var i = 1; i < this.top.length; ++i) {
-            this.line(i-1, 0, this.top[i-1], i, 0, this.top[i]);
-            this.line(2*this.top.length-2-(i-1), 0, this.top[i-1], 2*this.top.length-2-i, 0, this.top[i]);
-            this.line(i-1, this.side.length-1, this.bottom[i-1], i, this.side.length-1, this.bottom[i]);
-            this.line(2*this.top.length-2-(i-1), this.side.length-1, this.bottom[i-1], 2*this.top.length-2-i, this.side.length-1, this.bottom[i]);
+        for (let f of this.graph.faces) {
+            for (var i = 0; i < f.vertices.length; ++i) {
+                var j = (i+1) % f.vertices.length;
+                this.line(
+                    f.vertices[j].x, f.vertices[j].y, f.vertices[j].name,
+                    f.vertices[i].x, f.vertices[i].y, f.vertices[i].name);
+            }
         }
     }
 
-    private line(x1: number, y1: number, p1: Point, x2: number, y2: number, p2: Point) {
+    private line(x1: number, y1: number, p1: string, x2: number, y2: number, p2: string) {
         this.ctx.beginPath();
         this.ctx.moveTo((1+x1)*this.dx, (1+y1)*this.dy);
         this.ctx.lineTo((1+x2)*this.dx, (1+y2)*this.dy);
@@ -104,10 +106,10 @@ class Skin {
         this.ctx.ellipse((1+x2)*this.dx, (1+y2)*this.dy, 2, 2, 0, 0, 360);
         this.ctx.stroke();
         this.ctx.beginPath();
-        this.ctx.strokeText(p1.name, 4+(1+x1)*this.dx, (1+y1)*this.dy);
+        this.ctx.strokeText(p1, 4+(1+x1)*this.dx, (1+y1)*this.dy);
         this.ctx.stroke();
         this.ctx.beginPath();
-        this.ctx.strokeText(p2.name, 4+(1+x2)*this.dx, (1+y2)*this.dy);
+        this.ctx.strokeText(p2, 4+(1+x2)*this.dx, (1+y2)*this.dy);
         this.ctx.stroke();
     }
 }

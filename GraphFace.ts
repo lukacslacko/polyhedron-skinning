@@ -1,4 +1,6 @@
 class GraphFace {
     public vertices: GraphVertex[];
-    constructor() {}
+    constructor() {
+        this.vertices = new Array<GraphVertex>();
+    }
 }

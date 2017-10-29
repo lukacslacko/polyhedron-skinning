@@ -19,7 +19,7 @@ class Graph {
         for (let v of this.vertices) {
             if (v.name == name) return v;
         }
-        var v = new GraphVertex(name, false, 0, 0);
+        var v = new GraphVertex(name, false, Math.random(), Math.random());
         this.vertices.push(v);
         return v;
     }

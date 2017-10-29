@@ -1,1 +1,1 @@
-{"version":3,"file":"GraphFace.js","sourceRoot":"","sources":["GraphFace.ts"],"names":[],"mappings":"AAAA;IAEI;IAAe,CAAC;IACpB,gBAAC;AAAD,CAAC,AAHD,IAGC"}
+{"version":3,"file":"GraphFace.js","sourceRoot":"","sources":["GraphFace.ts"],"names":[],"mappings":"AAAA;IAEI;QACI,IAAI,CAAC,QAAQ,GAAG,IAAI,KAAK,EAAe,CAAC;IAC7C,CAAC;IACL,gBAAC;AAAD,CAAC,AALD,IAKC"}

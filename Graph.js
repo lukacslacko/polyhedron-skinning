@@ -19,7 +19,7 @@ var Graph = /** @class */ (function () {
             if (v_2.name == name)
                 return v_2;
         }
-        var v = new GraphVertex(name, false, 0, 0);
+        var v = new GraphVertex(name, false, Math.random(), Math.random());
         this.vertices.push(v);
         return v;
     };
