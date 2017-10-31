@@ -15,4 +15,13 @@ class GraphFace {
         var qy = q.y - v.y;
         if (side * (px*qy - qx*py) > 0) return p; else return q;
     }
+
+    describe(): string {
+        let result = "";
+        for (let v of this.vertices) {
+            if (result != "") result += ",";
+            result += v.describe();
+        }
+        return "{" + result + "}";
+    }
 }

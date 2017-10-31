@@ -7,4 +7,8 @@ quadrilateral.
 */
 class CutFace {
     constructor(private front: Segment, private back: Segment) {}
+
+    describe(): string {
+        return "<" + this.front.describe() + ";" + this.back.describe() + ">";
+    }
 }

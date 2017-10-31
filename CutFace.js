@@ -10,6 +10,9 @@ var CutFace = /** @class */ (function () {
         this.front = front;
         this.back = back;
     }
+    CutFace.prototype.describe = function () {
+        return "<" + this.front.describe() + ";" + this.back.describe() + ">";
+    };
     return CutFace;
 }());
 //# sourceMappingURL=CutFace.js.map

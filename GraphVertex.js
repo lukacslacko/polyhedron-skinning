@@ -6,6 +6,9 @@ var GraphVertex = /** @class */ (function () {
         this.y = y;
         this.point = point;
     }
+    GraphVertex.prototype.describe = function () {
+        return "(" + this.name + "=" + this.point.name + ")";
+    };
     return GraphVertex;
 }());
 //# sourceMappingURL=GraphVertex.js.map

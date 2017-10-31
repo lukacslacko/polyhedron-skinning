@@ -159,34 +159,72 @@ var Skin = /** @class */ (function () {
             return bottom.point;
         if (topRank == rank)
             return top.point;
+        var result = this.poly.splitEdge(new Segment(bottom.point, top.point), bottomRank - topRank, bottomRank - rank - 1);
+        return result;
     };
-    /*
-        private cutFace(f: GraphFace): CutFace[] {
-            var maxRank = -1;
-            var maxVertex: GraphVertex;
-            for (let v of f.vertices) {
-                var rank = this.cutRank(v);
-                if (rank > maxRank) {
-                    maxRank = rank;
-                    maxVertex = v;
-                }
+    Skin.prototype.upperNeighbor = function (face, vertex) {
+        var n = face.vertices.length;
+        var i = face.vertices.indexOf(vertex);
+        var p = face.vertices[(i + 1) % n];
+        var q = face.vertices[(i + n - 1) % n];
+        if (this.cutRank(p) < this.cutRank(vertex))
+            return p;
+        else
+            return q;
+    };
+    Skin.prototype.cutFace = function (f) {
+        console.log("Cutting " + f.describe());
+        var maxRank = -1;
+        var maxVertex;
+        for (var _i = 0, _a = f.vertices; _i < _a.length; _i++) {
+            var v = _a[_i];
+            var rank = this.cutRank(v);
+            if (rank > maxRank) {
+                maxRank = rank;
+                maxVertex = v;
             }
-            var leftVertex = maxVertex;
-            var rightVertex = maxVertex;
-            var rank = maxRank;
-            do {
-                var nextLeftVertex = f.neighbor(leftVertex, -1);
-                var nextRightVertex = f.neighbor(rightVertex, 1);
-                var leftNextRank = this.cutRank(nextLeftVertex);
-                var rightNextRank = this.cutRank(nextRightVertex);
-                var nextRank = Math.min(leftNextRank, rightNextRank);
-                while (rank < nextRank) {
-                    var leftBottom = this.rankedPoint(leftVertex, nextLeftVertex, rank);
-                    var leftTop = this.rankedPoint(leftVertex, nextLeftVertex, rank + 1);
-                }
-            } while (leftVertex != rightVertex);
         }
-    */
+        var leftVertex = maxVertex;
+        var rightVertex = maxVertex;
+        var rank = maxRank;
+        var result = new Array();
+        var cnt = 0;
+        do {
+            var nextLeftVertex = this.upperNeighbor(f, leftVertex);
+            var nextRightVertex = this.upperNeighbor(f, rightVertex);
+            if (leftVertex == maxVertex) {
+                nextLeftVertex = f.neighbor(leftVertex, 1);
+            }
+            if (rightVertex == maxVertex) {
+                nextRightVertex = f.neighbor(rightVertex, -1);
+            }
+            var leftNextRank = this.cutRank(nextLeftVertex);
+            var rightNextRank = this.cutRank(nextRightVertex);
+            var nextRank = Math.max(leftNextRank, rightNextRank);
+            console.log("Current", leftVertex.describe(), rightVertex.describe());
+            console.log("Next", nextLeftVertex.describe(), leftNextRank, nextRightVertex.describe(), rightNextRank);
+            console.log("Next rank", nextRank);
+            while (rank > nextRank) {
+                var leftBottom = this.rankedPoint(leftVertex, nextLeftVertex, rank);
+                var leftTop = this.rankedPoint(leftVertex, nextLeftVertex, rank - 1);
+                var rightBottom = this.rankedPoint(rightVertex, nextRightVertex, rank);
+                var rightTop = this.rankedPoint(rightVertex, nextRightVertex, rank - 1);
+                var newFace = new CutFace(new Segment(leftBottom, leftTop), new Segment(rightBottom, rightTop));
+                result.push(newFace);
+                --rank;
+                console.log("Added and rank", newFace.describe(), rank);
+            }
+            if (rank == leftNextRank)
+                leftVertex = nextLeftVertex;
+            if (rank == rightNextRank)
+                rightVertex = nextRightVertex;
+        } while (leftVertex != rightVertex && ((cnt++) < 10));
+        for (var _b = 0, result_1 = result; _b < result_1.length; _b++) {
+            var r = result_1[_b];
+            console.log(r.describe());
+        }
+        return result;
+    };
     Skin.prototype.cutAlong = function (cuts) {
         this.cuts = new Array();
         for (var _i = 0, cuts_1 = cuts; _i < cuts_1.length; _i++) {
@@ -196,8 +234,16 @@ var Skin = /** @class */ (function () {
         var cutFaces = new Array();
         for (var _a = 0, _b = this.graph.faces; _a < _b.length; _a++) {
             var f = _b[_a];
-            // cutFaces.concat(this.cutFace(f));
+            for (var _c = 0, _d = this.cutFace(f); _c < _d.length; _c++) {
+                var c = _d[_c];
+                cutFaces.push(c);
+            }
         }
+        for (var _e = 0, cutFaces_1 = cutFaces; _e < cutFaces_1.length; _e++) {
+            var c = cutFaces_1[_e];
+            console.log(c.describe());
+        }
+        console.log(cutFaces.length);
     };
     Skin.prototype.draw = function () {
         for (var _i = 0, _a = this.graph.faces; _i < _a.length; _i++) {

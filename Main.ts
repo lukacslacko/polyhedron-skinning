@@ -21,12 +21,12 @@ var skin = new Skin(
     icosahedronPath());
 skin.buildGraph();
 skin.solveCoordinates();
-//skin.cutAlong(icosahedronCuts());
+skin.cutAlong(icosahedronCuts());
 skin.draw();
 
 function reRender() {
-    //octahedron.render(scene, renderLabels);
-    icosahedron.render(scene, renderLabels);
+    octahedron.render(scene, renderLabels);
+    //icosahedron.render(scene, renderLabels);
     doRender();
 }
 

@@ -16,6 +16,16 @@ var GraphFace = /** @class */ (function () {
         else
             return q;
     };
+    GraphFace.prototype.describe = function () {
+        var result = "";
+        for (var _i = 0, _a = this.vertices; _i < _a.length; _i++) {
+            var v = _a[_i];
+            if (result != "")
+                result += ",";
+            result += v.describe();
+        }
+        return "{" + result + "}";
+    };
     return GraphFace;
 }());
 //# sourceMappingURL=GraphFace.js.map

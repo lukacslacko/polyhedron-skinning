@@ -157,13 +157,28 @@ class Skin {
     }
 
     private rankedPoint(bottom: GraphVertex, top: GraphVertex, rank: number): Point {
-        var bottomRank = this.cutRank(bottom);
+        var bottomRank = this.cutRank(bottom); 
         var topRank = this.cutRank(top);
         if (bottomRank == rank) return bottom.point;
         if (topRank == rank) return top.point;
+        let result = this.poly.splitEdge(
+            new Segment(bottom.point, top.point),
+            bottomRank - topRank, 
+            bottomRank - rank - 1);
+        return result;
     }
-/*
+
+    private upperNeighbor(face: GraphFace, vertex: GraphVertex): GraphVertex {
+        let n = face.vertices.length;
+        var i = face.vertices.indexOf(vertex);
+        var p = face.vertices[(i+1) % n];
+        var q = face.vertices[(i+n-1) % n];
+        if (this.cutRank(p) < this.cutRank(vertex)) return p;
+        else return q;
+    }
+
     private cutFace(f: GraphFace): CutFace[] {
+        console.log("Cutting " + f.describe());
         var maxRank = -1;
         var maxVertex: GraphVertex;
         for (let v of f.vertices) {
@@ -176,19 +191,40 @@ class Skin {
         var leftVertex = maxVertex;
         var rightVertex = maxVertex;
         var rank = maxRank;
+        var result = new Array<CutFace>();
+        let cnt = 0;
         do {
-            var nextLeftVertex = f.neighbor(leftVertex, -1);
-            var nextRightVertex = f.neighbor(rightVertex, 1);
+            var nextLeftVertex = this.upperNeighbor(f, leftVertex);
+            var nextRightVertex = this.upperNeighbor(f, rightVertex);
+            if (leftVertex == maxVertex) {
+                nextLeftVertex = f.neighbor(leftVertex, 1);
+            }
+            if (rightVertex == maxVertex) {
+                nextRightVertex = f.neighbor(rightVertex, -1);
+            }
             var leftNextRank = this.cutRank(nextLeftVertex);
             var rightNextRank = this.cutRank(nextRightVertex);
-            var nextRank = Math.min(leftNextRank, rightNextRank);
-            while (rank < nextRank) {
+            var nextRank = Math.max(leftNextRank, rightNextRank);
+            console.log("Current", leftVertex.describe(), rightVertex.describe());
+            console.log("Next", nextLeftVertex.describe(), leftNextRank, nextRightVertex.describe(), rightNextRank);
+            console.log("Next rank", nextRank);
+            while (rank > nextRank) {
                 var leftBottom = this.rankedPoint(leftVertex, nextLeftVertex, rank);
-                var leftTop = this.rankedPoint(leftVertex, nextLeftVertex, rank + 1);
+                var leftTop = this.rankedPoint(leftVertex, nextLeftVertex, rank - 1);
+                var rightBottom = this.rankedPoint(rightVertex, nextRightVertex, rank);
+                var rightTop = this.rankedPoint(rightVertex, nextRightVertex, rank - 1);
+                let newFace = new CutFace(new Segment(leftBottom, leftTop), new Segment(rightBottom, rightTop));
+                result.push(newFace);
+                --rank;
+                console.log("Added and rank", newFace.describe(), rank);
             }
-        } while (leftVertex != rightVertex);
+            if (rank == leftNextRank) leftVertex = nextLeftVertex;
+            if (rank == rightNextRank) rightVertex = nextRightVertex;
+        } while (leftVertex != rightVertex && ((cnt++) < 10));
+        for (let r of result) console.log(r.describe());
+        return result;
     }
-*/
+
     cutAlong(cuts: Array<string>): void {
         this.cuts = new Array<Array<string>>();
         for (let cut of cuts) {
@@ -196,8 +232,14 @@ class Skin {
         }
         var cutFaces = new Array<CutFace>();
         for (let f of this.graph.faces) {
-            // cutFaces.concat(this.cutFace(f));
+            for (let c of this.cutFace(f)) {
+                cutFaces.push(c);
+            }
         }
+        for (let c of cutFaces) {
+            console.log(c.describe());
+        }
+        console.log(cutFaces.length);
     }
 
     draw(): void {

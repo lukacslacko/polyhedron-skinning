@@ -46,11 +46,11 @@ function icosahedronPath(): Array<string> {
 
 function icosahedronCuts(): Array<string> {
     return [
-        "P",
+        "P<",
         "A< E",
         "A-d-0-2< B D P>",
         "d< C b A>",
         "p< a c A-d-0-2>",
         "e d>",
-        "p"];
+        "p>"];
 }
