@@ -302,12 +302,12 @@ class Skin {
         for (let p of planarFaces) {
             this.chainCtx.strokeStyle = "lightgreen";
             this.chainCtx.lineWidth = 3;
-            this.line(this.chainCtx, p.bottomLeft, p.bottomRight, d, d, 0.25-minX, -minY);
-            this.line(this.chainCtx, p.topLeft, p.topRight, d, d, 0.25-minX, -minY);
+            this.line(this.chainCtx, p.bottomLeft, p.bottomRight, d, d, 0.25-minX, 0.25-minY);
+            this.line(this.chainCtx, p.topLeft, p.topRight, d, d, 0.25-minX, 0.25-minY);
             this.chainCtx.strokeStyle = "black";
             this.chainCtx.lineWidth = 1;
-            this.line(this.chainCtx, p.bottomLeft, p.topLeft, d, d, 0.25-minX, -minY);
-            this.line(this.chainCtx, p.bottomRight, p.topRight, d, d, 0.25-minX, -minY);
+            this.line(this.chainCtx, p.bottomLeft, p.topLeft, d, d, 0.25-minX, 0.25-minY);
+            this.line(this.chainCtx, p.bottomRight, p.topRight, d, d, 0.25-minX, 0.25-minY);
             console.log(p.describe());
         }
         console.log(planarFaces.length);
