@@ -2,25 +2,26 @@ var icosahedron = icosahedronPoly();
 var truncatedIcosahedron = truncatedIcosahedronPoly();
 var octahedron = octahedronPoly();
 reRender();
-var skin = new Skin(document.getElementById("skin"), document.getElementById("chain"), octahedron, octahedronPath());
+/*
+var skin = new Skin(
+    <HTMLCanvasElement> document.getElementById("skin"),
+    <HTMLCanvasElement> document.getElementById("chain"),
+    octahedron,
+    octahedronPath());
 skin.buildGraph();
 skin.solveCoordinates();
 skin.cutAlong(octahedronCuts());
 skin.draw();
 reRender();
-/*
-var skin = new Skin(
-    <HTMLCanvasElement> document.getElementById("skin"),
-    icosahedron,
-    icosahedronPath());
+*/
+var skin = new Skin(document.getElementById("skin"), document.getElementById("chain"), icosahedron, icosahedronPath());
 skin.buildGraph();
 skin.solveCoordinates();
 skin.cutAlong(icosahedronCuts());
 skin.draw();
-*/
 function reRender() {
-    octahedron.render(scene, true);
-    //icosahedron.render(scene, true);
+    //octahedron.render(scene, true);
+    icosahedron.render(scene, true);
     doRender();
 }
 //# sourceMappingURL=Main.js.map
