@@ -42,12 +42,36 @@ var Face = /** @class */ (function () {
         }
         return undefined;
     };
+    Face.prototype.splitEdge = function (edge, parts, points) {
+        var fromIndex = this.points.indexOf(edge.from);
+        var toIndex = this.points.indexOf(edge.to);
+        console.log("Splitting " + this.describe() + " at edge " + edge.describe() + " into " + parts);
+        console.log("From index " + fromIndex + " to index " + toIndex);
+        if (toIndex == fromIndex + 1) {
+            for (var i = parts - 2; i >= 0; --i) {
+                this.points.splice(toIndex, 0, points[i]);
+            }
+        }
+        else if (fromIndex == toIndex + 1) {
+            for (var i = 0; i < parts - 1; ++i) {
+                this.points.splice(fromIndex, 0, points[i]);
+            }
+        }
+        else if (fromIndex == 0) {
+            for (var i = parts - 2; i >= 0; --i)
+                this.points.push(points[i]);
+        }
+        else {
+            for (var i = 0; i < parts - 1; ++i)
+                this.points.push(points[i]);
+        }
+    };
     Face.prototype.describe = function () {
         var result = "";
         for (var _i = 0, _a = this.points; _i < _a.length; _i++) {
             var p = _a[_i];
             if (result != "")
-                result += "-";
+                result += ",";
             result += p.name;
         }
         return result;

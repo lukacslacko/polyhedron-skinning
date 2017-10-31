@@ -3,23 +3,23 @@ var Graph = /** @class */ (function () {
         this.vertices = new Array();
         this.faces = new Array();
     }
-    Graph.prototype.makeFixedVertex = function (name, x, y) {
+    Graph.prototype.makeFixedVertex = function (name, x, y, p) {
         for (var _i = 0, _a = this.vertices; _i < _a.length; _i++) {
             var v_1 = _a[_i];
             if (v_1.name == name)
                 return v_1;
         }
-        var v = new GraphVertex(name, true, x, y);
+        var v = new GraphVertex(name, true, x, y, p);
         this.vertices.push(v);
         return v;
     };
-    Graph.prototype.makeVertex = function (name) {
+    Graph.prototype.makeVertex = function (name, p) {
         for (var _i = 0, _a = this.vertices; _i < _a.length; _i++) {
             var v_2 = _a[_i];
             if (v_2.name == name)
                 return v_2;
         }
-        var v = new GraphVertex(name, false, Math.random(), Math.random());
+        var v = new GraphVertex(name, false, Math.random(), Math.random(), p);
         this.vertices.push(v);
         return v;
     };

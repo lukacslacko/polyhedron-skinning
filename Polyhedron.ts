@@ -13,7 +13,7 @@ class Polyhedron {
 
     point(name: string): Point {
         for (let p of this.points) if (p.name == name) return p;
-        return null;
+        return undefined;
     }
 
     opposite(edge: Segment, face: Face): Face {
@@ -21,7 +21,7 @@ class Polyhedron {
             if (f == face) continue;
             if (f.hasEdge(edge)) return f;
         }
-        console.log("COuld not find opposite of " + face.describe() + " through edge " + edge.describe());
+        console.log("Could not find opposite of " + face.describe() + " through edge " + edge.describe());
         return undefined;
     }
 
@@ -38,5 +38,29 @@ class Polyhedron {
         if (renderLabels) for (let p of this.points) {
             p.render(scene);
         }
+    }
+
+    /*
+    Splits the given edge into parts number of segments and returns the index'th
+    vertex from the split edge. The internal vertices are named 
+    edge.from.name-edge.to.name-index-parts.
+    */
+    splitEdge(edge: Segment, parts: number, index: number): Point {
+        var alreadyThere = this.point([edge.from.name, edge.to.name, index, parts].join("-"));
+        if (alreadyThere) return alreadyThere;
+        var splitPoints = new Array<Point>();
+        var result: Point;
+        for (var i = 0; i < parts - 1; ++i) {
+            var point = edge.interpolate(i, parts);
+            this.points.push(point);
+            splitPoints.push(point);
+            if (i == index) result = point;
+        }
+        for (let f of this.faces) {
+            if (f.hasEdge(edge)) {
+                f.splitEdge(edge, parts, splitPoints);
+            }
+        }
+        return result;
     }
 }

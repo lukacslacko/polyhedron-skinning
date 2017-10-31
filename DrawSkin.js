@@ -4,9 +4,9 @@ var Skin = /** @class */ (function () {
         this.top = [];
         this.side = [];
         this.bottom = [];
-        this.find(pathNames[0], this.top, poly);
-        this.find(pathNames[1], this.side, poly);
-        this.find(pathNames[2], this.bottom, poly);
+        this.find(pathNames[0].split(" "), this.top, poly);
+        this.find(pathNames[1].split(" "), this.side, poly);
+        this.find(pathNames[2].split(" "), this.bottom, poly);
         var w = cnv.width;
         var h = cnv.height;
         this.dx = w / (2 * this.top.length);
@@ -46,10 +46,10 @@ var Skin = /** @class */ (function () {
                     y = this.side.length - 1;
                     x = this.top.length - 1 + side * (this.path.length - 1 - i);
                 }
-                graphFace.vertices.push(this.graph.makeFixedVertex(name, x, y));
+                graphFace.vertices.push(this.graph.makeFixedVertex(name, x, y, p));
             }
             else {
-                graphFace.vertices.push(this.graph.makeVertex(p.name));
+                graphFace.vertices.push(this.graph.makeVertex(p.name, p));
             }
         }
         this.graph.faces.push(graphFace);
@@ -144,8 +144,60 @@ var Skin = /** @class */ (function () {
             unsolvedVertices[i].y = ys[i];
         }
     };
+    Skin.prototype.cutRank = function (v) {
+        for (var i = 0; i < this.cuts.length; ++i) {
+            if (this.cuts[i].indexOf(v.name) > -1) {
+                return i;
+            }
+        }
+        return -1;
+    };
+    Skin.prototype.rankedPoint = function (bottom, top, rank) {
+        var bottomRank = this.cutRank(bottom);
+        var topRank = this.cutRank(top);
+        if (bottomRank == rank)
+            return bottom.point;
+        if (topRank == rank)
+            return top.point;
+    };
+    /*
+        private cutFace(f: GraphFace): CutFace[] {
+            var maxRank = -1;
+            var maxVertex: GraphVertex;
+            for (let v of f.vertices) {
+                var rank = this.cutRank(v);
+                if (rank > maxRank) {
+                    maxRank = rank;
+                    maxVertex = v;
+                }
+            }
+            var leftVertex = maxVertex;
+            var rightVertex = maxVertex;
+            var rank = maxRank;
+            do {
+                var nextLeftVertex = f.neighbor(leftVertex, -1);
+                var nextRightVertex = f.neighbor(rightVertex, 1);
+                var leftNextRank = this.cutRank(nextLeftVertex);
+                var rightNextRank = this.cutRank(nextRightVertex);
+                var nextRank = Math.min(leftNextRank, rightNextRank);
+                while (rank < nextRank) {
+                    var leftBottom = this.rankedPoint(leftVertex, nextLeftVertex, rank);
+                    var leftTop = this.rankedPoint(leftVertex, nextLeftVertex, rank + 1);
+                }
+            } while (leftVertex != rightVertex);
+        }
+    */
     Skin.prototype.cutAlong = function (cuts) {
-        this.cuts = cuts;
+        this.cuts = new Array();
+        for (var _i = 0, cuts_1 = cuts; _i < cuts_1.length; _i++) {
+            var cut = cuts_1[_i];
+            this.cuts.push(cut.split(" "));
+        }
+        var cutFaces = new Array();
+        for (var _a = 0, _b = this.graph.faces; _a < _b.length; _a++) {
+            var f = _b[_a];
+            // cutFaces.concat(this.cutFace(f));
+        }
     };
     Skin.prototype.draw = function () {
         for (var _i = 0, _a = this.graph.faces; _i < _a.length; _i++) {

@@ -6,20 +6,20 @@ class Graph {
         this.faces = new Array<GraphFace>();
     }
 
-    makeFixedVertex(name: string, x: number, y: number): GraphVertex {
+    makeFixedVertex(name: string, x: number, y: number, p: Point): GraphVertex {
         for (let v of this.vertices) {
             if (v.name == name) return v;
         }
-        var v = new GraphVertex(name, true, x, y);
+        var v = new GraphVertex(name, true, x, y, p);
         this.vertices.push(v);
         return v;
     }
 
-    makeVertex(name: string): GraphVertex {
+    makeVertex(name: string, p: Point): GraphVertex {
         for (let v of this.vertices) {
             if (v.name == name) return v;
         }
-        var v = new GraphVertex(name, false, Math.random(), Math.random());
+        var v = new GraphVertex(name, false, Math.random(), Math.random(), p);
         this.vertices.push(v);
         return v;
     }

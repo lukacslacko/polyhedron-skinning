@@ -18,7 +18,7 @@ function truncatedIcosahedronPoly() {
         var found = find(a.name + b.name);
         if (found)
             return found;
-        var p = new Segment(a, b).third();
+        var p = new Segment(a, b).interpolate(1, 3);
         points.push(p);
         return p;
     }
@@ -52,9 +52,14 @@ function truncatedIcosahedronPoly() {
     return new Polyhedron(faces);
 }
 function truncatedIcosahedronPath() {
-    return [["PA", "AP", "AB"], ["PA", "PE", "EP", "ED"], ["ED", "Eb", "bE"]];
+    return ["EP PE PD PC".split(" "), "EP ED Eb Ec cE cb cp pc pd pe".split(" "), "pe ep ed eB".split(" ")];
 }
 function truncatedIcosahedronCuts() {
-    return [[]];
+    return [
+        "ED< PE<".split(" "),
+        "Eb< DE PD<".split(" "),
+        "Ec< bE Db DP PC".split(" "),
+        "cE< bc bD DC CP PB PD>".split(" ")
+    ];
 }
 //# sourceMappingURL=TruncatedIcosahedron.js.map

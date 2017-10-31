@@ -6,7 +6,7 @@ var renderer = new THREE.WebGLRenderer({antialias: true, alpha: true, canvas: cn
 
 camera.position.z = 5;
 
-controls = new THREE.TrackballControls( camera, document.getElementById("cnv") );
+var controls = new THREE.TrackballControls( camera, document.getElementById("cnv") );
 controls.rotateSpeed = 5.0;
 controls.zoomSpeed = 1.2;
 controls.panSpeed = 0.8;

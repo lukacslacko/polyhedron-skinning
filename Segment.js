@@ -3,15 +3,11 @@ var Segment = /** @class */ (function () {
         this.from = from;
         this.to = to;
     }
-    Segment.prototype.midpoint = function () {
+    Segment.prototype.interpolate = function (index, parts) {
         var from = this.from;
         var to = this.to;
-        return new Point((from.x + to.x) / 2, (from.y + to.y) / 2, (from.z + to.z) / 2, from.name + to.name);
-    };
-    Segment.prototype.third = function () {
-        var from = this.from;
-        var to = this.to;
-        return new Point((2 * from.x + to.x) / 3, (2 * from.y + to.y) / 3, (2 * from.z + to.z) / 3, from.name + to.name);
+        var factor = (index + 1) / parts;
+        return new Point((1 - factor) * from.x + factor * to.x, (1 - factor) * from.y + factor * to.y, (1 - factor) * from.z + factor * to.z, [from.name, to.name, index, parts].join("-"));
     };
     Segment.prototype.describe = function () {
         return "[" + this.from.name + "," + this.to.name + "]";

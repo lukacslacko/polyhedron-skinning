@@ -13,13 +13,13 @@ class Skin {
     constructor(
         cnv: HTMLCanvasElement,
         private poly: Polyhedron,
-        pathNames: Array<Array<string>>) {
+        pathNames: Array<string>) {
         this.top = [];
         this.side = [];
         this.bottom = [];
-        this.find(pathNames[0], this.top, poly);
-        this.find(pathNames[1], this.side, poly);
-        this.find(pathNames[2], this.bottom, poly);
+        this.find(pathNames[0].split(" "), this.top, poly);
+        this.find(pathNames[1].split(" "), this.side, poly);
+        this.find(pathNames[2].split(" "), this.bottom, poly);
         var w = cnv.width;
         var h = cnv.height;
         this.dx = w / (2 * this.top.length);
@@ -57,9 +57,9 @@ class Skin {
                     y = this.side.length - 1;
                     x = this.top.length - 1 + side * (this.path.length - 1 - i);
                 }
-                graphFace.vertices.push(this.graph.makeFixedVertex(name, x, y));
+                graphFace.vertices.push(this.graph.makeFixedVertex(name, x, y, p));
             } else {
-                graphFace.vertices.push(this.graph.makeVertex(p.name));
+                graphFace.vertices.push(this.graph.makeVertex(p.name, p));
             }
         }
         this.graph.faces.push(graphFace);
@@ -147,8 +147,57 @@ class Skin {
         }
     }
 
-    cutAlong(cuts: Array<Array<string>>): void {
-        this.cuts = cuts;
+    private cutRank(v: GraphVertex): number {
+        for (var i = 0; i < this.cuts.length; ++i) {
+            if (this.cuts[i].indexOf(v.name) > -1) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private rankedPoint(bottom: GraphVertex, top: GraphVertex, rank: number): Point {
+        var bottomRank = this.cutRank(bottom);
+        var topRank = this.cutRank(top);
+        if (bottomRank == rank) return bottom.point;
+        if (topRank == rank) return top.point;
+    }
+/*
+    private cutFace(f: GraphFace): CutFace[] {
+        var maxRank = -1;
+        var maxVertex: GraphVertex;
+        for (let v of f.vertices) {
+            var rank = this.cutRank(v);
+            if (rank > maxRank) {
+                maxRank = rank;
+                maxVertex = v;
+            }
+        }
+        var leftVertex = maxVertex;
+        var rightVertex = maxVertex;
+        var rank = maxRank;
+        do {
+            var nextLeftVertex = f.neighbor(leftVertex, -1);
+            var nextRightVertex = f.neighbor(rightVertex, 1);
+            var leftNextRank = this.cutRank(nextLeftVertex);
+            var rightNextRank = this.cutRank(nextRightVertex);
+            var nextRank = Math.min(leftNextRank, rightNextRank);
+            while (rank < nextRank) {
+                var leftBottom = this.rankedPoint(leftVertex, nextLeftVertex, rank);
+                var leftTop = this.rankedPoint(leftVertex, nextLeftVertex, rank + 1);
+            }
+        } while (leftVertex != rightVertex);
+    }
+*/
+    cutAlong(cuts: Array<string>): void {
+        this.cuts = new Array<Array<string>>();
+        for (let cut of cuts) {
+            this.cuts.push(cut.split(" "));
+        }
+        var cutFaces = new Array<CutFace>();
+        for (let f of this.graph.faces) {
+            // cutFaces.concat(this.cutFace(f));
+        }
     }
 
     draw(): void {

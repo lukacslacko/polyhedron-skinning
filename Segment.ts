@@ -1,20 +1,15 @@
 class Segment {
     constructor(public from: Point, public to: Point) {}
 
-    midpoint(): Point {
+    interpolate(index: number, parts: number): Point {
         var from = this.from;
         var to = this.to;
+        var factor = (index+1)/parts;
         return new Point(
-            (from.x + to.x) / 2, (from.y + to.y) / 2, (from.z + to.z) / 2,
-            from.name + to.name);
-    }
-
-    third(): Point {
-        var from = this.from;
-        var to = this.to;
-        return new Point(
-            (2*from.x + to.x) / 3, (2*from.y + to.y) / 3, (2*from.z + to.z) / 3,
-            from.name + to.name);        
+            (1-factor) * from.x + factor * to.x, 
+            (1-factor) * from.y + factor * to.y,
+            (1-factor) * from.z + factor * to.z,
+            [from.name, to.name, index, parts].join("-"));
     }
 
     describe(): string {

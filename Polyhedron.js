@@ -18,7 +18,7 @@ var Polyhedron = /** @class */ (function () {
             if (p.name == name)
                 return p;
         }
-        return null;
+        return undefined;
     };
     Polyhedron.prototype.opposite = function (edge, face) {
         for (var _i = 0, _a = this.faces; _i < _a.length; _i++) {
@@ -28,7 +28,7 @@ var Polyhedron = /** @class */ (function () {
             if (f.hasEdge(edge))
                 return f;
         }
-        console.log("COuld not find opposite of " + face.describe() + " through edge " + edge.describe());
+        console.log("Could not find opposite of " + face.describe() + " through edge " + edge.describe());
         return undefined;
     };
     Polyhedron.prototype.hide = function (scene) {
@@ -47,6 +47,32 @@ var Polyhedron = /** @class */ (function () {
                 var p = _c[_b];
                 p.render(scene);
             }
+    };
+    /*
+    Splits the given edge into parts number of segments and returns the index'th
+    vertex from the split edge. The internal vertices are named
+    edge.from.name-edge.to.name-index-parts.
+    */
+    Polyhedron.prototype.splitEdge = function (edge, parts, index) {
+        var alreadyThere = this.point([edge.from.name, edge.to.name, index, parts].join("-"));
+        if (alreadyThere)
+            return alreadyThere;
+        var splitPoints = new Array();
+        var result;
+        for (var i = 0; i < parts - 1; ++i) {
+            var point = edge.interpolate(i, parts);
+            this.points.push(point);
+            splitPoints.push(point);
+            if (i == index)
+                result = point;
+        }
+        for (var _i = 0, _a = this.faces; _i < _a.length; _i++) {
+            var f = _a[_i];
+            if (f.hasEdge(edge)) {
+                f.splitEdge(edge, parts, splitPoints);
+            }
+        }
+        return result;
     };
     return Polyhedron;
 }());
