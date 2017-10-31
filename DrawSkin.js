@@ -1,5 +1,6 @@
 var Skin = /** @class */ (function () {
-    function Skin(cnv, poly, pathNames) {
+    function Skin(cnv, chainCanvas, poly, pathNames) {
+        this.chainCanvas = chainCanvas;
         this.poly = poly;
         this.top = [];
         this.side = [];
@@ -14,6 +15,9 @@ var Skin = /** @class */ (function () {
         this.ctx = cnv.getContext("2d");
         this.ctx.font = "18px Arial";
         this.ctx.fillStyle = "red";
+        this.chainCtx = chainCanvas.getContext("2d");
+        this.chainCtx.font = "8px Arial";
+        this.chainCtx.fillStyle = "red";
     }
     Skin.prototype.find = function (names, points, poly) {
         for (var _i = 0, names_1 = names; _i < names_1.length; _i++) {
@@ -247,15 +251,15 @@ var Skin = /** @class */ (function () {
         var chainedFaces = new Array();
         chainedFaces.push(cutFaces.pop());
         while (cutFaces.length > 0) {
-            var lastEdge = chainedFaces[chainedFaces.length - 1].back;
+            var lastEdge = chainedFaces[chainedFaces.length - 1].front;
             for (var i = 0; i < cutFaces.length; ++i) {
                 var f = cutFaces[i];
-                if (lastEdge.equalsDirected(f.front)) {
+                if (lastEdge.equalsDirected(f.back)) {
                     chainedFaces.push(f);
                     cutFaces.splice(i, 1);
                     break;
                 }
-                if (lastEdge.equalsReverted(f.back)) {
+                if (lastEdge.equalsReverted(f.front)) {
                     chainedFaces.push(f.rotate());
                     cutFaces.splice(i, 1);
                     break;
@@ -267,13 +271,49 @@ var Skin = /** @class */ (function () {
             console.log(c.describe());
         }
         console.log(chainedFaces.length);
+        var planarFaces = new Array();
+        var vert = new PlanarPoint(0, 1);
+        var orig = new PlanarPoint(0, 0);
+        var minX = 0;
+        var minY = 0;
+        var maxX = 0;
+        var maxY = 0;
+        for (var _g = 0, chainedFaces_2 = chainedFaces; _g < chainedFaces_2.length; _g++) {
+            var c = chainedFaces_2[_g];
+            var planarFace = new PlanarFace(vert, orig, c);
+            vert = planarFace.backVert.clone();
+            orig = planarFace.bottomRight.clone();
+            planarFaces.push(planarFace);
+            minX = Math.min(minX, planarFace.bottomLeft.x, planarFace.bottomRight.x, planarFace.topLeft.x, planarFace.topRight.x);
+            minY = Math.min(minY, planarFace.bottomLeft.y, planarFace.bottomRight.y, planarFace.topLeft.y, planarFace.topRight.y);
+            maxX = Math.max(maxX, planarFace.bottomLeft.x, planarFace.bottomRight.x, planarFace.topLeft.x, planarFace.topRight.x);
+            maxY = Math.max(maxY, planarFace.bottomLeft.y, planarFace.bottomRight.y, planarFace.topLeft.y, planarFace.topRight.y);
+        }
+        var dx = this.chainCanvas.width / (maxX - minX + 1);
+        var dy = this.chainCanvas.height / (maxY - minY + 1);
+        var d = Math.min(dx, dy);
+        for (var _h = 0, planarFaces_1 = planarFaces; _h < planarFaces_1.length; _h++) {
+            var p = planarFaces_1[_h];
+            this.chainCtx.strokeStyle = "lightgreen";
+            this.chainCtx.lineWidth = 3;
+            this.line(this.chainCtx, p.bottomLeft, p.bottomRight, d, d, 0.25 - minX, -minY);
+            this.line(this.chainCtx, p.topLeft, p.topRight, d, d, 0.25 - minX, -minY);
+            this.chainCtx.strokeStyle = "black";
+            this.chainCtx.lineWidth = 1;
+            this.line(this.chainCtx, p.bottomLeft, p.topLeft, d, d, 0.25 - minX, -minY);
+            this.line(this.chainCtx, p.bottomRight, p.topRight, d, d, 0.25 - minX, -minY);
+            console.log(p.describe());
+        }
+        console.log(planarFaces.length);
     };
     Skin.prototype.draw = function () {
+        this.ctx.strokeStyle = "black";
+        this.ctx.lineWidth = 1;
         for (var _i = 0, _a = this.graph.faces; _i < _a.length; _i++) {
             var f = _a[_i];
             for (var i = 0; i < f.vertices.length; ++i) {
                 var j = (i + 1) % f.vertices.length;
-                this.line(f.vertices[j], f.vertices[i]);
+                this.line(this.ctx, f.vertices[j], f.vertices[i], this.dx, this.dy);
             }
         }
         this.ctx.strokeStyle = "lightgreen";
@@ -281,31 +321,33 @@ var Skin = /** @class */ (function () {
         for (var _b = 0, _c = this.cuts; _b < _c.length; _b++) {
             var cut = _c[_b];
             for (var i = 0; i < cut.length - 1; ++i) {
-                this.line(this.graph.find(cut[i]), this.graph.find(cut[i + 1]));
+                this.line(this.ctx, this.graph.find(cut[i]), this.graph.find(cut[i + 1]), this.dx, this.dy);
             }
         }
     };
-    Skin.prototype.line = function (a, b) {
+    Skin.prototype.line = function (ctx, a, b, dx, dy, shiftX, shiftY) {
+        if (shiftX === void 0) { shiftX = 0.5; }
+        if (shiftY === void 0) { shiftY = 0.5; }
         var x1 = a.x;
         var x2 = b.x;
         var y1 = a.y;
         var y2 = b.y;
-        this.ctx.beginPath();
-        this.ctx.moveTo((1 + x1) * this.dx, (1 + y1) * this.dy);
-        this.ctx.lineTo((1 + x2) * this.dx, (1 + y2) * this.dy);
-        this.ctx.stroke();
-        this.ctx.beginPath();
-        this.ctx.ellipse((1 + x1) * this.dx, (1 + y1) * this.dy, 2, 2, 0, 0, 360);
-        this.ctx.stroke();
-        this.ctx.beginPath();
-        this.ctx.ellipse((1 + x2) * this.dx, (1 + y2) * this.dy, 2, 2, 0, 0, 360);
-        this.ctx.stroke();
-        this.ctx.beginPath();
-        this.ctx.fillText(a.name, 4 + (1 + x1) * this.dx, (1 + y1) * this.dy);
-        this.ctx.stroke();
-        this.ctx.beginPath();
-        this.ctx.fillText(b.name, 4 + (1 + x2) * this.dx, (1 + y2) * this.dy);
-        this.ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo((shiftX + x1) * dx, (shiftY + y1) * dy);
+        ctx.lineTo((shiftX + x2) * dx, (shiftY + y2) * dy);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.ellipse((shiftX + x1) * dx, (shiftY + y1) * dy, 2, 2, 0, 0, 360);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.ellipse((shiftX + x2) * dx, (shiftY + y2) * dy, 2, 2, 0, 0, 360);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.fillText(a.name, 4 + (shiftX + x1) * dx, (shiftY + y1) * dy);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.fillText(b.name, 4 + (shiftX + x2) * dx, (shiftY + y2) * dy);
+        ctx.stroke();
     };
     return Skin;
 }());

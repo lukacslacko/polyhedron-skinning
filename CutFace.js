@@ -14,7 +14,7 @@ var CutFace = /** @class */ (function () {
         return new CutFace(this.back.revert(), this.front.revert());
     };
     CutFace.prototype.describe = function () {
-        return "<" + this.front.describe() + ";" + this.back.describe() + ">";
+        return "<" + this.back.describe() + ";" + this.front.describe() + ">";
     };
     return CutFace;
 }());

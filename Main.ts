@@ -8,6 +8,7 @@ reRender();
 
 var skin = new Skin(
     <HTMLCanvasElement> document.getElementById("skin"),
+    <HTMLCanvasElement> document.getElementById("chain"),
     octahedron,
     octahedronPath());
 skin.buildGraph();

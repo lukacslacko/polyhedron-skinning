@@ -3,7 +3,7 @@ var truncatedIcosahedron = truncatedIcosahedronPoly();
 var octahedron = octahedronPoly();
 var renderLabels = false;
 reRender();
-var skin = new Skin(document.getElementById("skin"), octahedron, octahedronPath());
+var skin = new Skin(document.getElementById("skin"), document.getElementById("chain"), octahedron, octahedronPath());
 skin.buildGraph();
 skin.solveCoordinates();
 skin.cutAlong(octahedronCuts());

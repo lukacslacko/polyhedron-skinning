@@ -13,6 +13,6 @@ class CutFace {
     }
 
     describe(): string {
-        return "<" + this.front.describe() + ";" + this.back.describe() + ">";
+        return "<" + this.back.describe() + ";" + this.front.describe() + ">";
     }
 }

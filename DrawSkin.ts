@@ -2,6 +2,7 @@ class Skin {
     private dx: number;
     private dy: number;
     private ctx: CanvasRenderingContext2D;
+    private chainCtx: CanvasRenderingContext2D;
     private top: Point[];
     private bottom: Point[];
     private side: Point[];
@@ -12,6 +13,7 @@ class Skin {
 
     constructor(
         cnv: HTMLCanvasElement,
+        private chainCanvas: HTMLCanvasElement,
         private poly: Polyhedron,
         pathNames: Array<string>) {
         this.top = [];
@@ -27,6 +29,9 @@ class Skin {
         this.ctx = cnv.getContext("2d");
         this.ctx.font = "18px Arial";
         this.ctx.fillStyle = "red";
+        this.chainCtx = chainCanvas.getContext("2d");
+        this.chainCtx.font = "8px Arial";
+        this.chainCtx.fillStyle = "red";
     }
 
     private find(names: string[], points: Point[], poly: Polyhedron): void {
@@ -243,15 +248,15 @@ class Skin {
         let chainedFaces = new Array<CutFace>();
         chainedFaces.push(cutFaces.pop());
         while (cutFaces.length > 0) {
-            let lastEdge = chainedFaces[chainedFaces.length-1].back;
+            let lastEdge = chainedFaces[chainedFaces.length-1].front;
             for (let i = 0; i < cutFaces.length; ++i) {
                 let f = cutFaces[i];
-                if (lastEdge.equalsDirected(f.front)) {
+                if (lastEdge.equalsDirected(f.back)) {
                     chainedFaces.push(f);
                     cutFaces.splice(i, 1);
                     break;
                 }
-                if (lastEdge.equalsReverted(f. back)) {
+                if (lastEdge.equalsReverted(f.front)) {
                     chainedFaces.push(f.rotate());
                     cutFaces.splice(i, 1);
                     break;
@@ -262,44 +267,93 @@ class Skin {
             console.log(c.describe());
         }
         console.log(chainedFaces.length);
+        let planarFaces = new Array<PlanarFace>();
+        let vert = new PlanarPoint(0, 1);
+        let orig = new PlanarPoint(0, 0);
+        var minX = 0;
+        var minY = 0;
+        var maxX = 0;
+        var maxY = 0;
+        for (let c of chainedFaces) {
+            let planarFace = new PlanarFace(vert, orig, c);
+            vert = planarFace.backVert.clone();
+            orig = planarFace.bottomRight.clone();
+            planarFaces.push(planarFace);
+            minX = Math.min(
+                minX, 
+                planarFace.bottomLeft.x, planarFace.bottomRight.x,
+                planarFace.topLeft.x, planarFace.topRight.x);
+            minY = Math.min(
+                minY, 
+                planarFace.bottomLeft.y, planarFace.bottomRight.y,
+                planarFace.topLeft.y, planarFace.topRight.y);
+            maxX = Math.max(
+                maxX, 
+                planarFace.bottomLeft.x, planarFace.bottomRight.x,
+                planarFace.topLeft.x, planarFace.topRight.x);
+            maxY = Math.max(
+                maxY, 
+                planarFace.bottomLeft.y, planarFace.bottomRight.y,
+                planarFace.topLeft.y, planarFace.topRight.y);
+        }
+        let dx = this.chainCanvas.width / (maxX - minX + 1);
+        let dy = this.chainCanvas.height / (maxY - minY + 1);
+        let d = Math.min(dx, dy);
+        for (let p of planarFaces) {
+            this.chainCtx.strokeStyle = "lightgreen";
+            this.chainCtx.lineWidth = 3;
+            this.line(this.chainCtx, p.bottomLeft, p.bottomRight, d, d, 0.25-minX, -minY);
+            this.line(this.chainCtx, p.topLeft, p.topRight, d, d, 0.25-minX, -minY);
+            this.chainCtx.strokeStyle = "black";
+            this.chainCtx.lineWidth = 1;
+            this.line(this.chainCtx, p.bottomLeft, p.topLeft, d, d, 0.25-minX, -minY);
+            this.line(this.chainCtx, p.bottomRight, p.topRight, d, d, 0.25-minX, -minY);
+            console.log(p.describe());
+        }
+        console.log(planarFaces.length);
     }
 
     draw(): void {
+        this.ctx.strokeStyle = "black";
+        this.ctx.lineWidth = 1;
         for (let f of this.graph.faces) {
             for (var i = 0; i < f.vertices.length; ++i) {
                 var j = (i+1) % f.vertices.length;
-                this.line(f.vertices[j], f.vertices[i]);
+                this.line(this.ctx, f.vertices[j], f.vertices[i], this.dx, this.dy);
             }
         }
         this.ctx.strokeStyle = "lightgreen";
         this.ctx.lineWidth = 3;
         for (let cut of this.cuts) {
             for (var i = 0; i < cut.length - 1; ++i) {
-                this.line(this.graph.find(cut[i]), this.graph.find(cut[i+1]));
+                this.line(this.ctx, this.graph.find(cut[i]), this.graph.find(cut[i+1]), this.dx, this.dy);
             }
         }
     }
 
-    private line(a: GraphVertex, b: GraphVertex) {
+    private line(
+        ctx: CanvasRenderingContext2D, 
+        a: GraphVertex | PlanarPoint, b: GraphVertex | PlanarPoint,
+        dx:number, dy:number, shiftX = 0.5, shiftY = 0.5) {
         var x1 = a.x;
         var x2 = b.x;
         var y1 = a.y;
         var y2 = b.y;
-        this.ctx.beginPath();
-        this.ctx.moveTo((1+x1)*this.dx, (1+y1)*this.dy);
-        this.ctx.lineTo((1+x2)*this.dx, (1+y2)*this.dy);
-        this.ctx.stroke();
-        this.ctx.beginPath();
-        this.ctx.ellipse((1+x1)*this.dx, (1+y1)*this.dy, 2, 2, 0, 0, 360);
-        this.ctx.stroke();
-        this.ctx.beginPath();
-        this.ctx.ellipse((1+x2)*this.dx, (1+y2)*this.dy, 2, 2, 0, 0, 360);
-        this.ctx.stroke();
-        this.ctx.beginPath();
-        this.ctx.fillText(a.name, 4+(1+x1)*this.dx, (1+y1)*this.dy);
-        this.ctx.stroke();
-        this.ctx.beginPath();
-        this.ctx.fillText(b.name, 4+(1+x2)*this.dx, (1+y2)*this.dy);
-        this.ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo((shiftX+x1)*dx, (shiftY+y1)*dy);
+        ctx.lineTo((shiftX+x2)*dx, (shiftY+y2)*dy);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.ellipse((shiftX+x1)*dx, (shiftY+y1)*dy, 2, 2, 0, 0, 360);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.ellipse((shiftX+x2)*dx, (shiftY+y2)*dy, 2, 2, 0, 0, 360);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.fillText(a.name, 4+(shiftX+x1)*dx, (shiftY+y1)*dy);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.fillText(b.name, 4+(shiftX+x2)*dx, (shiftY+y2)*dy);
+        ctx.stroke();
     }
 }

@@ -25,4 +25,11 @@ class Point {
         sprite.position.z = this.z * 1.05;
         scene.add(sprite);
     }
+
+    distance(other: Point): number {
+        let dx = this.x - other.x;
+        let dy = this.y - other.y;
+        let dz = this.z - other.z;
+        return Math.sqrt(dx*dx + dy*dy + dz*dz);
+    }
 }

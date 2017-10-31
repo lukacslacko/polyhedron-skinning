@@ -26,6 +26,12 @@ var Point = /** @class */ (function () {
         sprite.position.z = this.z * 1.05;
         scene.add(sprite);
     };
+    Point.prototype.distance = function (other) {
+        var dx = this.x - other.x;
+        var dy = this.y - other.y;
+        var dz = this.z - other.z;
+        return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    };
     return Point;
 }());
 //# sourceMappingURL=Point.js.map
