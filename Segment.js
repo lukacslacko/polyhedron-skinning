@@ -9,6 +9,15 @@ var Segment = /** @class */ (function () {
         var factor = (index + 1) / parts;
         return new Point((1 - factor) * from.x + factor * to.x, (1 - factor) * from.y + factor * to.y, (1 - factor) * from.z + factor * to.z, [from.name, to.name, index, parts].join("-"));
     };
+    Segment.prototype.equalsDirected = function (other) {
+        return this.from == other.from && this.to == other.to;
+    };
+    Segment.prototype.equalsReverted = function (other) {
+        return this.from == other.to && this.to == other.from;
+    };
+    Segment.prototype.revert = function () {
+        return new Segment(this.to, this.from);
+    };
     Segment.prototype.describe = function () {
         return "[" + this.from.name + "," + this.to.name + "]";
     };

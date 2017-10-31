@@ -240,6 +240,28 @@ class Skin {
             console.log(c.describe());
         }
         console.log(cutFaces.length);
+        let chainedFaces = new Array<CutFace>();
+        chainedFaces.push(cutFaces.pop());
+        while (cutFaces.length > 0) {
+            let lastEdge = chainedFaces[chainedFaces.length-1].back;
+            for (let i = 0; i < cutFaces.length; ++i) {
+                let f = cutFaces[i];
+                if (lastEdge.equalsDirected(f.front)) {
+                    chainedFaces.push(f);
+                    cutFaces.splice(i, 1);
+                    break;
+                }
+                if (lastEdge.equalsReverted(f. back)) {
+                    chainedFaces.push(f.rotate());
+                    cutFaces.splice(i, 1);
+                    break;
+                }
+            }
+        }
+        for (let c of chainedFaces) {
+            console.log(c.describe());
+        }
+        console.log(chainedFaces.length);
     }
 
     draw(): void {

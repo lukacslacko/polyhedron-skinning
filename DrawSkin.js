@@ -244,6 +244,29 @@ var Skin = /** @class */ (function () {
             console.log(c.describe());
         }
         console.log(cutFaces.length);
+        var chainedFaces = new Array();
+        chainedFaces.push(cutFaces.pop());
+        while (cutFaces.length > 0) {
+            var lastEdge = chainedFaces[chainedFaces.length - 1].back;
+            for (var i = 0; i < cutFaces.length; ++i) {
+                var f = cutFaces[i];
+                if (lastEdge.equalsDirected(f.front)) {
+                    chainedFaces.push(f);
+                    cutFaces.splice(i, 1);
+                    break;
+                }
+                if (lastEdge.equalsReverted(f.back)) {
+                    chainedFaces.push(f.rotate());
+                    cutFaces.splice(i, 1);
+                    break;
+                }
+            }
+        }
+        for (var _f = 0, chainedFaces_1 = chainedFaces; _f < chainedFaces_1.length; _f++) {
+            var c = chainedFaces_1[_f];
+            console.log(c.describe());
+        }
+        console.log(chainedFaces.length);
     };
     Skin.prototype.draw = function () {
         for (var _i = 0, _a = this.graph.faces; _i < _a.length; _i++) {

@@ -10,6 +10,9 @@ var CutFace = /** @class */ (function () {
         this.front = front;
         this.back = back;
     }
+    CutFace.prototype.rotate = function () {
+        return new CutFace(this.back.revert(), this.front.revert());
+    };
     CutFace.prototype.describe = function () {
         return "<" + this.front.describe() + ";" + this.back.describe() + ">";
     };

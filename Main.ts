@@ -5,7 +5,7 @@ var octahedron = octahedronPoly();
 var renderLabels = false;
 
 reRender();
-/*
+
 var skin = new Skin(
     <HTMLCanvasElement> document.getElementById("skin"),
     octahedron,
@@ -14,7 +14,7 @@ skin.buildGraph();
 skin.solveCoordinates();
 skin.cutAlong(octahedronCuts());
 skin.draw();
-*/
+/*
 var skin = new Skin(
     <HTMLCanvasElement> document.getElementById("skin"),
     icosahedron,
@@ -23,7 +23,7 @@ skin.buildGraph();
 skin.solveCoordinates();
 skin.cutAlong(icosahedronCuts());
 skin.draw();
-
+*/
 function reRender() {
     octahedron.render(scene, renderLabels);
     //icosahedron.render(scene, renderLabels);
