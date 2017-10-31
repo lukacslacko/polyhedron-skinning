@@ -2,8 +2,6 @@ var icosahedron = icosahedronPoly();
 var truncatedIcosahedron = truncatedIcosahedronPoly();
 var octahedron = octahedronPoly();
 
-var renderLabels = false;
-
 reRender();
 
 var skin = new Skin(
@@ -15,6 +13,7 @@ skin.buildGraph();
 skin.solveCoordinates();
 skin.cutAlong(octahedronCuts());
 skin.draw();
+reRender();
 /*
 var skin = new Skin(
     <HTMLCanvasElement> document.getElementById("skin"),
@@ -26,12 +25,7 @@ skin.cutAlong(icosahedronCuts());
 skin.draw();
 */
 function reRender() {
-    octahedron.render(scene, renderLabels);
-    //icosahedron.render(scene, renderLabels);
+    octahedron.render(scene, true);
+    //icosahedron.render(scene, true);
     doRender();
-}
-
-function setRenderLabels(box: HTMLInputElement) {
-    renderLabels = box.checked;
-    reRender();
 }
