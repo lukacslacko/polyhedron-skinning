@@ -4,8 +4,10 @@ class PlanarFace {
     public bottomLeft: PlanarPoint;
     public bottomRight: PlanarPoint;
     public backVert: PlanarPoint;
+    public tabAtBottom: boolean;
 
     constructor(vert: PlanarPoint, orig: PlanarPoint, face: CutFace) {
+        this.tabAtBottom = face.tabAtBottom;
         this.bottomLeft = orig;
         this.bottomLeft.name = face.back.from.name;
         let f = face.back.from.distance(face.back.to);

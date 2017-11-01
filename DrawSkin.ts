@@ -302,9 +302,10 @@ class Skin {
         let dy = this.chainCanvas.height / (maxY - minY + 1);
         let d = Math.min(dx, dy);
         for (let p of planarFaces) {
-            this.chainCtx.strokeStyle = "lightgreen";
             this.chainCtx.lineWidth = 3;
+            this.chainCtx.strokeStyle = p.tabAtBottom ? "lightgreen" : "orange";
             this.line(this.chainCtx, p.bottomLeft, p.bottomRight, d, d, 0.25-minX, 0.25-minY);
+            this.chainCtx.strokeStyle = !p.tabAtBottom ? "lightgreen" : "orange";
             this.line(this.chainCtx, p.topLeft, p.topRight, d, d, 0.25-minX, 0.25-minY);
             this.chainCtx.strokeStyle = "black";
             this.chainCtx.lineWidth = 1;

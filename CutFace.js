@@ -6,15 +6,17 @@ cut of the skin proceeds. Each face in the cut up skin is therefore a triangle o
 quadrilateral.
 */
 var CutFace = /** @class */ (function () {
-    function CutFace(front, back) {
+    function CutFace(front, back, tabAtBottom) {
+        if (tabAtBottom === void 0) { tabAtBottom = true; }
         this.front = front;
         this.back = back;
+        this.tabAtBottom = tabAtBottom;
     }
     CutFace.prototype.rotate = function () {
-        return new CutFace(this.back.revert(), this.front.revert());
+        return new CutFace(this.back.revert(), this.front.revert(), !this.tabAtBottom);
     };
     CutFace.prototype.describe = function () {
-        return "<" + this.back.describe() + ";" + this.front.describe() + ">";
+        return "<" + this.back.describe() + ";" + this.front.describe() + ";" + this.tabAtBottom + ">";
     };
     return CutFace;
 }());

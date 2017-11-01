@@ -6,13 +6,15 @@ cut of the skin proceeds. Each face in the cut up skin is therefore a triangle o
 quadrilateral.
 */
 class CutFace {
-    constructor(public front: Segment, public back: Segment) {}
+    constructor(
+        public front: Segment, public back: Segment, 
+        public tabAtBottom: boolean = true) {}
 
     rotate(): CutFace {
-        return new CutFace(this.back.revert(), this.front.revert());
+        return new CutFace(this.back.revert(), this.front.revert(), !this.tabAtBottom);
     }
 
     describe(): string {
-        return "<" + this.back.describe() + ";" + this.front.describe() + ">";
+        return "<" + this.back.describe() + ";" + this.front.describe() + ";" + this.tabAtBottom + ">";
     }
 }

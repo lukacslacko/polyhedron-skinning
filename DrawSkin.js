@@ -294,9 +294,10 @@ var Skin = /** @class */ (function () {
         var d = Math.min(dx, dy);
         for (var _h = 0, planarFaces_1 = planarFaces; _h < planarFaces_1.length; _h++) {
             var p = planarFaces_1[_h];
-            this.chainCtx.strokeStyle = "lightgreen";
             this.chainCtx.lineWidth = 3;
+            this.chainCtx.strokeStyle = p.tabAtBottom ? "lightgreen" : "orange";
             this.line(this.chainCtx, p.bottomLeft, p.bottomRight, d, d, 0.25 - minX, 0.25 - minY);
+            this.chainCtx.strokeStyle = !p.tabAtBottom ? "lightgreen" : "orange";
             this.line(this.chainCtx, p.topLeft, p.topRight, d, d, 0.25 - minX, 0.25 - minY);
             this.chainCtx.strokeStyle = "black";
             this.chainCtx.lineWidth = 1;

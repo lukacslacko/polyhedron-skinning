@@ -1,5 +1,6 @@
 var PlanarFace = /** @class */ (function () {
     function PlanarFace(vert, orig, face) {
+        this.tabAtBottom = face.tabAtBottom;
         this.bottomLeft = orig;
         this.bottomLeft.name = face.back.from.name;
         var f = face.back.from.distance(face.back.to);
