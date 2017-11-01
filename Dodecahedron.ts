@@ -38,23 +38,24 @@ function dodecahedronPoly(): Polyhedron {
     ]);
 
     result.splitEdge(new Segment(E, AE), 2, 0);
+    result.splitEdge(new Segment(AE, A), 2, 0);
+    result.splitEdge(new Segment(A, AD), 2, 0);
     return result;
 }
+
 function dodecahedronPath(): Array<string> {
-    return ["E EH H GH", "E E-AE-0-2 AE A AD", "AD BC B BF"];
+    return ["E EH", "E E-AE-0-2 AE AE-A-0-2 A A-AD-0-2 AD", "AD BC"];
 }
 
 function dodecahedronCuts(): Array<string> {
     return [
-        "E>", 
-        "EH> E-AE-0-2>", 
-        "H> AE>", 
-        "GH FG EF A>", 
-        "H< G F AB AD>", 
-        "EH< BC>", 
-        "E< DH CD CG B>", 
-        "E-AE-0-2< D C BF", 
-        "AE< B<", 
-        "A< BC<", 
-        "AD<"];
+        "E<", 
+        "E-AE-0-2< EH", 
+        "AE< EF FG H E>", 
+        "AE-A-0-2< F G DH E-AE-0-2>", 
+        "A< BF GH AE>",
+        "A-AD-0-2< AB CG CD AE-A-0-2>",
+        "AD< B C D A>", 
+        "BC A-AD-0-2>", 
+        "AD>"];
 }
