@@ -27,7 +27,7 @@ class Skin {
         this.dx = w / (2 * this.top.length);
         this.dy = h / (this.side.length + 1);
         this.ctx = cnv.getContext("2d");
-        this.ctx.font = "18px Arial";
+        this.ctx.font = "12px Arial";
         this.ctx.fillStyle = "red";
         this.chainCtx = chainCanvas.getContext("2d");
         this.chainCtx.font = "8px Arial";
@@ -244,6 +244,7 @@ class Skin {
         for (let c of cutFaces) {
             console.log(c.describe());
         }
+        
         console.log(cutFaces.length);
         let chainedFaces = new Array<CutFace>();
         chainedFaces.push(cutFaces.pop());
@@ -267,6 +268,7 @@ class Skin {
             console.log(c.describe());
         }
         console.log(chainedFaces.length);
+        
         let planarFaces = new Array<PlanarFace>();
         let vert = new PlanarPoint(0, 1);
         let orig = new PlanarPoint(0, 0);

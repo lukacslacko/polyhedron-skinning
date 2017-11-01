@@ -21,7 +21,7 @@ class Polyhedron {
             if (f == face) continue;
             if (f.hasEdge(edge)) return f;
         }
-        console.log("Could not find opposite of " + face.describe() + " through edge " + edge.describe());
+        console.log("Could not find opposite of " + (face == null ? "null" : face.describe()) + " through edge " + edge.describe());
         return undefined;
     }
 

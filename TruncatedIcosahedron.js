@@ -15,10 +15,10 @@ function truncatedIcosahedronPoly() {
     var points = [P, A, B, C, D, E, p, a, b, c, d, e];
     var faces = new Array();
     function third(a, b) {
-        var found = find(a.name + b.name);
+        var found = find(a.name + "-" + b.name + "-0-3");
         if (found)
             return found;
-        var p = new Segment(a, b).interpolate(1, 3);
+        var p = new Segment(a, b).interpolate(0, 3);
         points.push(p);
         return p;
     }
@@ -49,17 +49,33 @@ function truncatedIcosahedronPoly() {
         var x = _c[_b];
         faces.push(t(x));
     }
-    return new Polyhedron(faces);
+    var result = new Polyhedron(faces);
+    result.splitEdge(new Segment(third(C, a), third(a, C)), 2, 0);
+    result.splitEdge(new Segment(third(a, C), third(a, e)), 2, 0);
+    return result;
 }
 function truncatedIcosahedronPath() {
-    return ["EP PE PD PC".split(" "), "EP ED Eb Ec cE cb cp pc pd pe".split(" "), "pe ep ed eB".split(" ")];
+    return [
+        "A-P-0-3 A-E-0-3",
+        "A-P-0-3 P-A-0-3 P-B-0-3 P-C-0-3 C-P-0-3 C-D-0-3 C-a-0-3 C-a-0-3-a-C-0-3-0-2 a-C-0-3 a-C-0-3-a-e-0-3-0-2 a-e-0-3",
+        "a-e-0-3 a-p-0-3"
+    ];
 }
 function truncatedIcosahedronCuts() {
     return [
-        "ED< PE<".split(" "),
-        "Eb< DE PD<".split(" "),
-        "Ec< bE Db DP PC".split(" "),
-        "cE< bc bD DC CP PB PD>".split(" ")
+        "A-P-0-3<",
+        "P-A-0-3< A-E-0-3",
+        "P-B-0-3< P-E-0-3 E-A-0-3 A-c-0-3 A-P-0-3>",
+        "P-C-0-3< E-P-0-3 E-c-0-3 c-A-0-3 A-B-0-3 P-A-0-3>",
+        "C-P-0-3< P-D-0-3 E-D-0-3 c-E-0-3 A-d-0-3 B-A-0-3 P-B-0-3>",
+        "C-D-0-3< D-P-0-3 E-b-0-3 c-b-0-3 c-d-0-3 d-A-0-3 B-d-0-3 B-P-0-3 P-C-0-3>",
+        "C-a-0-3< D-C-0-3 D-E-0-3 b-E-0-3 c-p-0-3 d-c-0-3 d-B-0-3 B-C-0-3 C-P-0-3>",
+        "C-a-0-3-a-C-0-3-0-2< D-b-0-3 b-c-0-3 p-c-0-3 d-p-0-3 B-e-0-3 C-B-0-3 C-D-0-3>",
+        "a-C-0-3< D-a-0-3 b-D-0-3 b-p-0-3 p-d-0-3 d-e-0-3 e-B-0-3 C-a-0-3>",
+        "a-C-0-3-a-e-0-3-0-2< a-D-0-3 b-a-0-3 p-b-0-3 p-e-0-3 e-d-0-3 C-e-0-3 C-a-0-3-a-C-0-3-0-2>",
+        "a-e-0-3< a-b-0-3 p-a-0-3 e-p-0-3 e-C-0-3 a-C-0-3>",
+        "a-p-0-3 e-a-0-3 a-C-0-3-a-e-0-3-0-2>",
+        "a-e-0-3>"
     ];
 }
 //# sourceMappingURL=TruncatedIcosahedron.js.map

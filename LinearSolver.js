@@ -2,7 +2,6 @@
 Solves the system x_i = c_i + sum(a_ij*x_j, j != i) with a_ij := a[i*n+j].
 */
 function SolveLinear(c, a) {
-    console.log(c, a);
     var n = c.length;
     if (n == 0)
         return [];
