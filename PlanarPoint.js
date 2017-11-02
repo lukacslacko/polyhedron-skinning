@@ -22,6 +22,9 @@ var PlanarPoint = /** @class */ (function () {
         var diff = other.plus(this.times(-1));
         return diff.times(1 / diff.length());
     };
+    PlanarPoint.prototype.distanceTo = function (other) {
+        return other.plus(this.times(-1)).length();
+    };
     return PlanarPoint;
 }());
 //# sourceMappingURL=PlanarPoint.js.map

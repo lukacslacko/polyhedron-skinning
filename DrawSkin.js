@@ -306,6 +306,18 @@ var Skin = /** @class */ (function () {
             console.log(p.describe());
         }
         console.log(planarFaces.length);
+        var dxf = new DXF();
+        for (var i = 3; i < 4; ++i) {
+            var left = chainedFaces[i];
+            var right = chainedFaces[(i + 1) % chainedFaces.length];
+            var vert_1 = new PlanarPoint(0, 1);
+            var orig_1 = new PlanarPoint(0, 0);
+            var leftPlanar = new PlanarFace(vert_1, orig_1, left);
+            var rightPlanar = new PlanarFace(leftPlanar.backVert, leftPlanar.bottomRight, right);
+            leftPlanar.render(dxf, true);
+            rightPlanar.render(dxf, false);
+        }
+        document.getElementById("download").appendChild(dxf.downloadLink("proba.dxf"));
     };
     Skin.prototype.draw = function () {
         this.ctx.strokeStyle = "black";

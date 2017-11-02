@@ -314,6 +314,19 @@ class Skin {
             console.log(p.describe());
         }
         console.log(planarFaces.length);
+
+        let dxf = new DXF();
+        for (let i = 3; i < 4; ++i) {
+            let left = chainedFaces[i];
+            let right = chainedFaces[(i+1) % chainedFaces.length];
+            let vert = new PlanarPoint(0, 1);
+            let orig = new PlanarPoint(0, 0);
+            let leftPlanar = new PlanarFace(vert, orig, left);
+            let rightPlanar = new PlanarFace(leftPlanar.backVert, leftPlanar.bottomRight, right);
+            leftPlanar.render(dxf, true);
+            rightPlanar.render(dxf, false);
+        }
+        document.getElementById("download").appendChild(dxf.downloadLink("proba.dxf"));        
     }
 
     draw(): void {

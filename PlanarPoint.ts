@@ -26,4 +26,8 @@ class PlanarPoint {
         let diff = other.plus(this.times(-1));
         return diff.times(1 / diff.length());
     }
+
+    distanceTo(other: PlanarPoint): number {
+        return other.plus(this.times(-1)).length();
+    }
 }

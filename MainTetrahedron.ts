@@ -16,8 +16,6 @@ var dxf = new DXF();
 dxf.line(0,0, 100,-100);
 dxf.line(50,-100, 100,-100);
 
-document.getElementById("download").appendChild(dxf.downloadLink("proba.dxf"));
-
 reRender();
 
 function reRender() {
