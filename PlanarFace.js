@@ -28,7 +28,6 @@ var PlanarFace = /** @class */ (function () {
             this.bottomRight.name = face.front.from.name;
             this.backVert = this.bottomRight.unitVectorTo(this.topRight);
         }
-        console.log("Created " + this.describe() + " from " + face.describe());
     }
     PlanarFace.prototype.horiz = function (vert) {
         return new PlanarPoint(vert.y, -vert.x);
@@ -44,8 +43,10 @@ var PlanarFace = /** @class */ (function () {
     PlanarFace.prototype.render = function (dxf, left) {
         this.line(dxf, this.bottomLeft, this.topLeft, !left);
         this.line(dxf, this.bottomRight, this.topRight, left);
-        this.tab(dxf, this.bottomLeft, this.bottomRight, this.tabAtBottom, true);
-        this.tab(dxf, this.topLeft, this.topRight, this.tabAtBottom, false);
+        if (this.bottomLeft != this.bottomRight)
+            this.tab(dxf, this.bottomLeft, this.bottomRight, this.tabAtBottom, true);
+        if (this.topLeft != this.topRight)
+            this.tab(dxf, this.topLeft, this.topRight, this.tabAtBottom, false);
     };
     PlanarFace.prototype.line = function (dxf, a, b, dashed) {
         if (!dashed) {
@@ -71,7 +72,7 @@ var PlanarFace = /** @class */ (function () {
     };
     PlanarFace.prototype.scaledLine = function (dxf, a, b) {
         var scale = 20;
-        dxf.line(a.x * scale, -a.y * scale, b.x * scale, -b.y * scale);
+        dxf.line(a.x * scale, a.y * scale, b.x * scale, b.y * scale);
     };
     PlanarFace.prototype.tab = function (dxf, a, b, tabAtBottom, bottom) {
         var d = a.distanceTo(b);

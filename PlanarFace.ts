@@ -33,7 +33,6 @@ class PlanarFace {
             this.bottomRight.name = face.front.from.name;
             this.backVert = this.bottomRight.unitVectorTo(this.topRight);
         }
-        console.log("Created " + this.describe() + " from " + face.describe());
     }
 
     private horiz(vert: PlanarPoint): PlanarPoint {
@@ -50,14 +49,14 @@ class PlanarFace {
         return [this.bottomLeft.name, this.bottomRight.name, this.topRight.name, this.topLeft.name].join(":");
     }
 
-    render(dxf: DXF, left: boolean): void {
+    render(dxf: DXFModule, left: boolean): void {
         this.line(dxf, this.bottomLeft, this.topLeft, !left);
         this.line(dxf, this.bottomRight, this.topRight, left);
-        this.tab(dxf, this.bottomLeft, this.bottomRight, this.tabAtBottom, true);
-        this.tab(dxf, this.topLeft, this.topRight, this.tabAtBottom, false);
+        if (this.bottomLeft != this.bottomRight) this.tab(dxf, this.bottomLeft, this.bottomRight, this.tabAtBottom, true);
+        if (this.topLeft != this.topRight) this.tab(dxf, this.topLeft, this.topRight, this.tabAtBottom, false);
     }
 
-    private line(dxf: DXF, a: PlanarPoint, b: PlanarPoint, dashed: boolean): void {
+    private line(dxf: DXFModule, a: PlanarPoint, b: PlanarPoint, dashed: boolean): void {
         if (!dashed) {
             this.scaledLine(dxf, a, b);
         } else {
@@ -82,12 +81,12 @@ class PlanarFace {
         }
     }
 
-    private scaledLine(dxf: DXF, a: PlanarPoint, b: PlanarPoint): void {
+    private scaledLine(dxf: DXFModule, a: PlanarPoint, b: PlanarPoint): void {
         let scale = 20;
-        dxf.line(a.x * scale, -a.y * scale, b.x * scale, -b.y * scale);
+        dxf.line(a.x * scale, a.y * scale, b.x * scale, b.y * scale);
     }
 
-    private tab(dxf: DXF, a: PlanarPoint, b: PlanarPoint, tabAtBottom: boolean, bottom: boolean): void {
+    private tab(dxf: DXFModule, a: PlanarPoint, b: PlanarPoint, tabAtBottom: boolean, bottom: boolean): void {
         let d = a.distanceTo(b);
         let v = a.unitVectorTo(b);
         let w = this.horiz(v);

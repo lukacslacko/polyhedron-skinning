@@ -316,15 +316,34 @@ class Skin {
         console.log(planarFaces.length);
 
         let dxf = new DXF();
-        for (let i = 3; i < 4; ++i) {
+        let x = 0;
+        let y = 0;
+        let rowHeight = 0;
+        let pageWidth = 200;
+        for (let i = 0; i < chainedFaces.length; ++i) {
             let left = chainedFaces[i];
             let right = chainedFaces[(i+1) % chainedFaces.length];
             let vert = new PlanarPoint(0, 1);
             let orig = new PlanarPoint(0, 0);
             let leftPlanar = new PlanarFace(vert, orig, left);
             let rightPlanar = new PlanarFace(leftPlanar.backVert, leftPlanar.bottomRight, right);
-            leftPlanar.render(dxf, true);
-            rightPlanar.render(dxf, false);
+            let piece = new DXFModule();
+            leftPlanar.render(piece, true);
+            rightPlanar.render(piece, false);
+            let width = piece.maxX - piece.minX + 5;
+            let height = piece.maxY - piece.minY + 5;
+            console.log("Piece " + i + " width " + width + " height " + height);
+            if (x + width < pageWidth) {
+                dxf.add(piece, x - piece.minX, y - piece.minY);
+                x += width;
+                rowHeight = Math.max(rowHeight, height);
+            } else {
+                x = 0;
+                y += rowHeight;
+                rowHeight = height;
+                dxf.add(piece, x - piece.minX, y - piece.minY);
+                x = width;
+            }
         }
         document.getElementById("download").appendChild(dxf.downloadLink("proba.dxf"));        
     }

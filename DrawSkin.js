@@ -307,15 +307,35 @@ var Skin = /** @class */ (function () {
         }
         console.log(planarFaces.length);
         var dxf = new DXF();
-        for (var i = 3; i < 4; ++i) {
+        var x = 0;
+        var y = 0;
+        var rowHeight = 0;
+        var pageWidth = 200;
+        for (var i = 0; i < chainedFaces.length; ++i) {
             var left = chainedFaces[i];
             var right = chainedFaces[(i + 1) % chainedFaces.length];
             var vert_1 = new PlanarPoint(0, 1);
             var orig_1 = new PlanarPoint(0, 0);
             var leftPlanar = new PlanarFace(vert_1, orig_1, left);
             var rightPlanar = new PlanarFace(leftPlanar.backVert, leftPlanar.bottomRight, right);
-            leftPlanar.render(dxf, true);
-            rightPlanar.render(dxf, false);
+            var piece = new DXFModule();
+            leftPlanar.render(piece, true);
+            rightPlanar.render(piece, false);
+            var width = piece.maxX - piece.minX + 5;
+            var height = piece.maxY - piece.minY + 5;
+            console.log("Piece " + i + " width " + width + " height " + height);
+            if (x + width < pageWidth) {
+                dxf.add(piece, x - piece.minX, y - piece.minY);
+                x += width;
+                rowHeight = Math.max(rowHeight, height);
+            }
+            else {
+                x = 0;
+                y += rowHeight;
+                rowHeight = height;
+                dxf.add(piece, x - piece.minX, y - piece.minY);
+                x = width;
+            }
         }
         document.getElementById("download").appendChild(dxf.downloadLink("proba.dxf"));
     };
