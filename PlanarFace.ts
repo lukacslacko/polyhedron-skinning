@@ -60,19 +60,20 @@ class PlanarFace {
         if (!dashed) {
             this.scaledLine(dxf, a, b);
         } else {
-            let cut = 0.2;
+            let cut = 0.1;
             let gap = 0.2;
-            let d = a.distanceTo(b);
-            let n = (d - 2*cut) / (gap + cut + gap);
-            let nCeil = Math.ceil(n);
-            let factor = n / nCeil;
-            let scaledCut = factor * cut;
-            let scaledGap = factor * gap; 
-            let scaledStep = 2 * scaledGap + scaledCut;
             let v = a.unitVectorTo(b);
             this.scaledLine(dxf, a, a.plus(v.times(cut)));
             this.scaledLine(dxf, b, b.plus(v.times(-cut)));
-            for (let i = 0; i < n; ++i) {
+            let d = a.distanceTo(b);
+            let n = (d - 2*cut) / (gap + cut + gap);
+            let nFloor = Math.floor(n);
+            if (nFloor == 0) return;
+            let factor = n / nFloor;
+            let scaledCut = factor * cut;
+            let scaledGap = factor * gap; 
+            let scaledStep = 2 * scaledGap + scaledCut;
+            for (let i = 0; i < nFloor; ++i) {
                 this.scaledLine(
                     dxf, 
                     a.plus(v.times(cut + i * scaledStep + scaledGap)),

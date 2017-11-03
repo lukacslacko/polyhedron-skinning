@@ -1,10 +1,11 @@
 function octahedronPoly() {
-    var A = new Point(-1, 0, 0, "A");
-    var B = new Point(0, -1, 0, "B");
-    var C = new Point(1, 0, 0, "C");
-    var D = new Point(0, 1, 0, "D");
-    var P = new Point(0, 0, 1, "P");
-    var Q = new Point(0, 0, -1, "Q");
+    var a = Math.sqrt(3);
+    var A = new Point(-a, 0, 0, "A");
+    var B = new Point(0, -a, 0, "B");
+    var C = new Point(a, 0, 0, "C");
+    var D = new Point(0, a, 0, "D");
+    var P = new Point(0, 0, a, "P");
+    var Q = new Point(0, 0, -a, "Q");
     return new Polyhedron([
         new Face([P, A, B]),
         new Face([P, B, C]),

@@ -48,6 +48,31 @@ var Polyhedron = /** @class */ (function () {
                 p.render(scene);
             }
     };
+    Polyhedron.prototype.scale = function (factor) {
+        var scaledPoints = new Array();
+        for (var _i = 0, _a = this.points; _i < _a.length; _i++) {
+            var p = _a[_i];
+            scaledPoints.push(new Point(factor * p.x, factor * p.y, factor * p.z, p.name));
+        }
+        function find(p) {
+            for (var _i = 0, scaledPoints_1 = scaledPoints; _i < scaledPoints_1.length; _i++) {
+                var scaled = scaledPoints_1[_i];
+                if (p.name == scaled.name)
+                    return scaled;
+            }
+        }
+        var scaledFaces = new Array();
+        for (var _b = 0, _c = this.faces; _b < _c.length; _b++) {
+            var f = _c[_b];
+            var scaled = new Array();
+            for (var _d = 0, _e = f.points; _d < _e.length; _d++) {
+                var p = _e[_d];
+                scaled.push(find(p));
+            }
+            scaledFaces.push(new Face(scaled));
+        }
+        return new Polyhedron(scaledFaces);
+    };
     /*
     Splits the given edge into parts number of segments and returns the index'th
     vertex from the split edge. The internal vertices are named

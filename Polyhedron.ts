@@ -40,6 +40,23 @@ class Polyhedron {
         }
     }
 
+    scale(factor: number): Polyhedron {
+        let scaledPoints = new Array<Point>();
+        for (let p of this.points) {
+            scaledPoints.push(new Point(factor * p.x, factor * p.y, factor * p.z, p.name));
+        }
+        function find(p: Point): Point {
+            for (let scaled of scaledPoints) if (p.name == scaled.name) return scaled;
+        }
+        let scaledFaces = new Array<Face>();
+        for (let f of this.faces) {
+            let scaled = new Array<Point>();
+            for (let p of f.points) scaled.push(find(p));
+            scaledFaces.push(new Face(scaled));
+        }
+        return new Polyhedron(scaledFaces);
+    }
+
     /*
     Splits the given edge into parts number of segments and returns the index'th
     vertex from the split edge. The internal vertices are named 

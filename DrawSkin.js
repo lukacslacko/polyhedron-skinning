@@ -307,37 +307,96 @@ var Skin = /** @class */ (function () {
         }
         console.log(planarFaces.length);
         var dxf = new DXF();
+        var row = new Array();
         var x = 0;
         var y = 0;
         var rowHeight = 0;
         var pageWidth = 200;
+        var pageHeight = 260;
+        var page = 0;
         for (var i = 0; i < chainedFaces.length; ++i) {
             var left = chainedFaces[i];
             var right = chainedFaces[(i + 1) % chainedFaces.length];
-            var vert_1 = new PlanarPoint(0, 1);
-            var orig_1 = new PlanarPoint(0, 0);
-            var leftPlanar = new PlanarFace(vert_1, orig_1, left);
-            var rightPlanar = new PlanarFace(leftPlanar.backVert, leftPlanar.bottomRight, right);
-            var piece = new DXFModule();
-            leftPlanar.render(piece, true);
-            rightPlanar.render(piece, false);
+            var rotations = new Array();
+            for (var rotAng = 0; rotAng <= 180; rotAng += 5) {
+                rotations.push(new PlanarPoint(Math.cos(rotAng * Math.PI / 180), Math.sin(rotAng * Math.PI / 180)));
+            }
+            var pieces = new Array();
+            for (var j = 0; j < rotations.length; ++j) {
+                var vert_1 = rotations[j];
+                var orig_1 = new PlanarPoint(0, 0);
+                var leftPlanar = new PlanarFace(vert_1, orig_1, left);
+                var rightPlanar = new PlanarFace(leftPlanar.backVert, leftPlanar.bottomRight, right);
+                var piece_1 = new DXFModule();
+                leftPlanar.render(piece_1, true);
+                rightPlanar.render(piece_1, false);
+                pieces.push(piece_1);
+            }
+            var minWidth = pieces[0].maxX - pieces[0].minX;
+            var minPiece = pieces[0];
+            for (var j = 1; j < pieces.length; ++j) {
+                var width_1 = pieces[j].maxX - pieces[j].minX;
+                if (width_1 < minWidth) {
+                    minWidth = width_1;
+                    minPiece = pieces[j];
+                }
+            }
+            var piece = minPiece;
             var width = piece.maxX - piece.minX + 5;
             var height = piece.maxY - piece.minY + 5;
+            var shiftX = -piece.minX + 5;
+            var shiftY = -piece.minY + 5;
             console.log("Piece " + i + " width " + width + " height " + height);
             if (x + width < pageWidth) {
-                dxf.add(piece, x - piece.minX, y - piece.minY);
-                x += width;
+                row.push(piece.shift(x + shiftX, shiftY));
                 rowHeight = Math.max(rowHeight, height);
+                x += width;
             }
-            else {
+            else if (y + rowHeight < pageHeight) {
+                for (var _j = 0, row_1 = row; _j < row_1.length; _j++) {
+                    var piece_2 = row_1[_j];
+                    dxf.add(piece_2.shift(0, y));
+                }
                 x = 0;
                 y += rowHeight;
                 rowHeight = height;
-                dxf.add(piece, x - piece.minX, y - piece.minY);
+                row = new Array();
+                row.push(piece.shift(x + shiftX, shiftY));
                 x = width;
             }
+            else {
+                document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));
+                document.getElementById("download").appendChild(document.createElement("br"));
+                dxf = new DXF();
+                y = 0;
+                x = 0;
+                for (var _k = 0, row_2 = row; _k < row_2.length; _k++) {
+                    var piece_3 = row_2[_k];
+                    dxf.add(piece_3);
+                }
+                rowHeight = height;
+                row = new Array();
+                row.push(piece.shift(shiftX, shiftY));
+                x = width;
+                y = rowHeight;
+            }
         }
-        document.getElementById("download").appendChild(dxf.downloadLink("proba.dxf"));
+        if (y + rowHeight < pageHeight) {
+            for (var _l = 0, row_3 = row; _l < row_3.length; _l++) {
+                var piece = row_3[_l];
+                dxf.add(piece.shift(0, y));
+            }
+        }
+        else {
+            document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));
+            document.getElementById("download").appendChild(document.createElement("br"));
+            dxf = new DXF();
+            for (var _m = 0, row_4 = row; _m < row_4.length; _m++) {
+                var piece = row_4[_m];
+                dxf.add(piece);
+            }
+        }
+        document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));
     };
     Skin.prototype.draw = function () {
         this.ctx.strokeStyle = "black";

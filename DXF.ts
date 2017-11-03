@@ -5,9 +5,9 @@ class DXF {
         this.lines.push("0", "SECTION", "2", "ENTITIES");
     }
 
-    add(piece: DXFModule, x: number, y: number): void {
+    add(piece: DXFModule): void {
         for (let line of piece.lines) {
-            this.line(x + line.x1, y + line.y1, x + line.x2, y + line.y2);
+            this.line(line.x1, line.y1, line.x2, line.y2);
         }
     }
 
@@ -57,6 +57,13 @@ class DXFModule {
         this.maxX = Math.max(this.maxX, x1, x2);
         this.minY = Math.min(this.minY, y1, y2);
         this.maxY = Math.max(this.maxY, y1, y2);
-        console.log("Line", x1, y1, x2, y2, this.minX, this.minY, this.maxX, this.maxY);
+    }
+
+    shift(x: number, y: number): DXFModule {
+        let result = new DXFModule();
+        for (let line of this.lines) {
+            result.line(x + line.x1, y + line.y1, x + line.x2, y + line.y2);
+        }
+        return result;
     }
 }

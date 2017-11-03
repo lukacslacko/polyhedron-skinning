@@ -53,19 +53,21 @@ var PlanarFace = /** @class */ (function () {
             this.scaledLine(dxf, a, b);
         }
         else {
-            var cut = 0.2;
+            var cut = 0.1;
             var gap = 0.2;
-            var d = a.distanceTo(b);
-            var n = (d - 2 * cut) / (gap + cut + gap);
-            var nCeil = Math.ceil(n);
-            var factor = n / nCeil;
-            var scaledCut = factor * cut;
-            var scaledGap = factor * gap;
-            var scaledStep = 2 * scaledGap + scaledCut;
             var v = a.unitVectorTo(b);
             this.scaledLine(dxf, a, a.plus(v.times(cut)));
             this.scaledLine(dxf, b, b.plus(v.times(-cut)));
-            for (var i = 0; i < n; ++i) {
+            var d = a.distanceTo(b);
+            var n = (d - 2 * cut) / (gap + cut + gap);
+            var nFloor = Math.floor(n);
+            if (nFloor == 0)
+                return;
+            var factor = n / nFloor;
+            var scaledCut = factor * cut;
+            var scaledGap = factor * gap;
+            var scaledStep = 2 * scaledGap + scaledCut;
+            for (var i = 0; i < nFloor; ++i) {
                 this.scaledLine(dxf, a.plus(v.times(cut + i * scaledStep + scaledGap)), a.plus(v.times(cut + i * scaledStep + scaledGap + scaledCut)));
             }
         }

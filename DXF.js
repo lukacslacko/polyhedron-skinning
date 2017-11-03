@@ -3,10 +3,10 @@ var DXF = /** @class */ (function () {
         this.lines = new Array();
         this.lines.push("0", "SECTION", "2", "ENTITIES");
     }
-    DXF.prototype.add = function (piece, x, y) {
+    DXF.prototype.add = function (piece) {
         for (var _i = 0, _a = piece.lines; _i < _a.length; _i++) {
             var line = _a[_i];
-            this.line(x + line.x1, y + line.y1, x + line.x2, y + line.y2);
+            this.line(line.x1, line.y1, line.x2, line.y2);
         }
     };
     DXF.prototype.line = function (x1, y1, x2, y2) {
@@ -48,7 +48,14 @@ var DXFModule = /** @class */ (function () {
         this.maxX = Math.max(this.maxX, x1, x2);
         this.minY = Math.min(this.minY, y1, y2);
         this.maxY = Math.max(this.maxY, y1, y2);
-        console.log("Line", x1, y1, x2, y2, this.minX, this.minY, this.maxX, this.maxY);
+    };
+    DXFModule.prototype.shift = function (x, y) {
+        var result = new DXFModule();
+        for (var _i = 0, _a = this.lines; _i < _a.length; _i++) {
+            var line = _a[_i];
+            result.line(x + line.x1, y + line.y1, x + line.x2, y + line.y2);
+        }
+        return result;
     };
     return DXFModule;
 }());

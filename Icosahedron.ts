@@ -38,7 +38,7 @@ function icosahedronPoly(): Polyhedron {
 
     poly.splitEdge(new Segment(A, d), 2, 0);
     
-    return poly;
+    return poly.scale(1.5);
 }
 function icosahedronPath(): Array<string> {
     return ["P E", "P A A-d-0-2 d p", "p e"];
