@@ -48,6 +48,22 @@ var PlanarFace = /** @class */ (function () {
         if (this.topLeft != this.topRight)
             this.tab(dxf, this.topLeft, this.topRight, this.tabAtBottom, false);
     };
+    PlanarFace.prototype.cover = function (dxf) {
+        if (this.bottomLeft != this.bottomRight)
+            this.line(dxf, this.bottomLeft, this.bottomRight, false);
+        if (this.topLeft != this.topRight)
+            this.line(dxf, this.topLeft, this.topRight, false);
+        var leftUnit = this.bottomLeft.unitVectorTo(this.topLeft).times(0.05);
+        var leftInset = this.horiz(leftUnit);
+        var leftStart = this.bottomLeft.plus(leftInset).plus(leftUnit.times(-2));
+        var leftEnd = this.topLeft.plus(leftInset).plus(leftUnit.times(2));
+        this.line(dxf, leftStart, leftEnd, false);
+        var rightUnit = this.bottomRight.unitVectorTo(this.topRight).times(0.05);
+        var rightInset = this.horiz(rightUnit).times(-1);
+        var rightStart = this.bottomRight.plus(rightInset).plus(rightUnit.times(-2));
+        var rightEnd = this.topRight.plus(rightInset).plus(rightUnit.times(2));
+        this.line(dxf, rightStart, rightEnd, false);
+    };
     PlanarFace.prototype.line = function (dxf, a, b, dashed) {
         if (!dashed) {
             this.scaledLine(dxf, a, b);

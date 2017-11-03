@@ -321,7 +321,7 @@ class Skin {
         let y = 0;
         let rowHeight = 0;
         let pageWidth = 200;
-        let pageHeight = 260;
+        let pageHeight = 270;
         let page = 0;
         for (let i = 0; i < chainedFaces.length; ++i) {
             let left = chainedFaces[i];
@@ -340,6 +340,89 @@ class Skin {
                 let piece = new DXFModule();
                 leftPlanar.render(piece, true);
                 rightPlanar.render(piece, false);
+                pieces.push(piece);
+            }
+            let minWidth = pieces[0].maxX - pieces[0].minX;
+            let minPiece = pieces[0];
+            for (let j = 1; j < pieces.length; ++j) {
+                let width = pieces[j].maxX - pieces[j].minX;
+                if (width < minWidth) {
+                    minWidth = width;
+                    minPiece = pieces[j];
+                }
+            }
+            let piece = minPiece;
+            let width = piece.maxX - piece.minX + 5;
+            let height = piece.maxY - piece.minY + 5;
+            let shiftX = -piece.minX + 5;
+            let shiftY = -piece.minY + 5;
+            console.log("Piece " + i + " width " + width + " height " + height);
+            if (x + width < pageWidth) {
+                row.push(piece.shift(x + shiftX, shiftY));
+                rowHeight = Math.max(rowHeight, height);
+                x += width;
+            } else if (y + rowHeight < pageHeight) {
+                for (let piece of row) {
+                    dxf.add(piece.shift(0, y));
+                }
+                x = 0;
+                y += rowHeight;
+                rowHeight = height;
+                row = new Array<DXFModule>();
+                row.push(piece.shift(x + shiftX, shiftY));
+                x = width;
+            } else {
+                document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));        
+                document.getElementById("download").appendChild(dxf.previewCanvas(pageWidth, pageHeight));
+                dxf = new DXF();
+                y = 0;
+                x = 0;
+                for (let piece of row) {
+                    dxf.add(piece);
+                }
+                rowHeight = height;
+                row = new Array<DXFModule>();
+                row.push(piece.shift(shiftX, shiftY));
+                x = width;
+                y = rowHeight;
+            }
+        }
+        if (y + rowHeight < pageHeight) {
+            for (let piece of row) {
+                dxf.add(piece.shift(0, y));
+            }
+        } else {
+            document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));        
+            document.getElementById("download").appendChild(dxf.previewCanvas(pageWidth, pageHeight));
+            dxf = new DXF();
+            for (let piece of row) {
+                dxf.add(piece);
+            }
+        }
+        document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));        
+        document.getElementById("download").appendChild(dxf.previewCanvas(pageWidth, pageHeight));
+        document.getElementById("download").appendChild(document.createElement("br"));
+        
+        dxf = new DXF();
+        row = new Array<DXFModule>();
+        x = 0;
+        y = 0;
+        rowHeight = 0;
+        page = 0;
+        for (let i = 0; i < chainedFaces.length; ++i) {
+            let face = chainedFaces[i];
+            let rotations = new Array<PlanarPoint>();
+            for (let rotAng = 0; rotAng <= 180; rotAng += 5) {
+                rotations.push(new PlanarPoint(
+                    Math.cos(rotAng * Math.PI / 180), Math.sin(rotAng * Math.PI / 180)));
+            }
+            let pieces = new Array<DXFModule>();
+            for (let j = 0; j < rotations.length; ++j) {
+                let vert = rotations[j];
+                let orig = new PlanarPoint(0, 0);
+                let planar = new PlanarFace(vert, orig, face);
+                let piece = new DXFModule();
+                planar.cover(piece);
                 pieces.push(piece);
             }
             let minWidth = pieces[0].maxX - pieces[0].minX;

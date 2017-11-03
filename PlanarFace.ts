@@ -56,6 +56,21 @@ class PlanarFace {
         if (this.topLeft != this.topRight) this.tab(dxf, this.topLeft, this.topRight, this.tabAtBottom, false);
     }
 
+    cover(dxf: DXFModule): void {
+        if (this.bottomLeft != this.bottomRight) this.line(dxf, this.bottomLeft, this.bottomRight, false);
+        if (this.topLeft != this.topRight) this.line(dxf, this.topLeft, this.topRight, false);
+        let leftUnit = this.bottomLeft.unitVectorTo(this.topLeft).times(0.05);
+        let leftInset = this.horiz(leftUnit);
+        let leftStart = this.bottomLeft.plus(leftInset).plus(leftUnit.times(-2));
+        let leftEnd = this.topLeft.plus(leftInset).plus(leftUnit.times(2));
+        this.line(dxf, leftStart, leftEnd, false);
+        let rightUnit = this.bottomRight.unitVectorTo(this.topRight).times(0.05);
+        let rightInset = this.horiz(rightUnit).times(-1);
+        let rightStart = this.bottomRight.plus(rightInset).plus(rightUnit.times(-2));
+        let rightEnd = this.topRight.plus(rightInset).plus(rightUnit.times(2));
+        this.line(dxf, rightStart, rightEnd, false);
+    }
+
     private line(dxf: DXFModule, a: PlanarPoint, b: PlanarPoint, dashed: boolean): void {
         if (!dashed) {
             this.scaledLine(dxf, a, b);

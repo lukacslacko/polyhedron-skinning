@@ -312,7 +312,7 @@ var Skin = /** @class */ (function () {
         var y = 0;
         var rowHeight = 0;
         var pageWidth = 200;
-        var pageHeight = 260;
+        var pageHeight = 270;
         var page = 0;
         for (var i = 0; i < chainedFaces.length; ++i) {
             var left = chainedFaces[i];
@@ -393,6 +393,94 @@ var Skin = /** @class */ (function () {
             dxf = new DXF();
             for (var _m = 0, row_4 = row; _m < row_4.length; _m++) {
                 var piece = row_4[_m];
+                dxf.add(piece);
+            }
+        }
+        document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));
+        document.getElementById("download").appendChild(dxf.previewCanvas(pageWidth, pageHeight));
+        document.getElementById("download").appendChild(document.createElement("br"));
+        dxf = new DXF();
+        row = new Array();
+        x = 0;
+        y = 0;
+        rowHeight = 0;
+        page = 0;
+        for (var i = 0; i < chainedFaces.length; ++i) {
+            var face = chainedFaces[i];
+            var rotations = new Array();
+            for (var rotAng = 0; rotAng <= 180; rotAng += 5) {
+                rotations.push(new PlanarPoint(Math.cos(rotAng * Math.PI / 180), Math.sin(rotAng * Math.PI / 180)));
+            }
+            var pieces = new Array();
+            for (var j = 0; j < rotations.length; ++j) {
+                var vert_2 = rotations[j];
+                var orig_2 = new PlanarPoint(0, 0);
+                var planar = new PlanarFace(vert_2, orig_2, face);
+                var piece_4 = new DXFModule();
+                planar.cover(piece_4);
+                pieces.push(piece_4);
+            }
+            var minWidth = pieces[0].maxX - pieces[0].minX;
+            var minPiece = pieces[0];
+            for (var j = 1; j < pieces.length; ++j) {
+                var width_2 = pieces[j].maxX - pieces[j].minX;
+                if (width_2 < minWidth) {
+                    minWidth = width_2;
+                    minPiece = pieces[j];
+                }
+            }
+            var piece = minPiece;
+            var width = piece.maxX - piece.minX + 5;
+            var height = piece.maxY - piece.minY + 5;
+            var shiftX = -piece.minX + 5;
+            var shiftY = -piece.minY + 5;
+            console.log("Piece " + i + " width " + width + " height " + height);
+            if (x + width < pageWidth) {
+                row.push(piece.shift(x + shiftX, shiftY));
+                rowHeight = Math.max(rowHeight, height);
+                x += width;
+            }
+            else if (y + rowHeight < pageHeight) {
+                for (var _o = 0, row_5 = row; _o < row_5.length; _o++) {
+                    var piece_5 = row_5[_o];
+                    dxf.add(piece_5.shift(0, y));
+                }
+                x = 0;
+                y += rowHeight;
+                rowHeight = height;
+                row = new Array();
+                row.push(piece.shift(x + shiftX, shiftY));
+                x = width;
+            }
+            else {
+                document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));
+                document.getElementById("download").appendChild(dxf.previewCanvas(pageWidth, pageHeight));
+                dxf = new DXF();
+                y = 0;
+                x = 0;
+                for (var _p = 0, row_6 = row; _p < row_6.length; _p++) {
+                    var piece_6 = row_6[_p];
+                    dxf.add(piece_6);
+                }
+                rowHeight = height;
+                row = new Array();
+                row.push(piece.shift(shiftX, shiftY));
+                x = width;
+                y = rowHeight;
+            }
+        }
+        if (y + rowHeight < pageHeight) {
+            for (var _q = 0, row_7 = row; _q < row_7.length; _q++) {
+                var piece = row_7[_q];
+                dxf.add(piece.shift(0, y));
+            }
+        }
+        else {
+            document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));
+            document.getElementById("download").appendChild(dxf.previewCanvas(pageWidth, pageHeight));
+            dxf = new DXF();
+            for (var _r = 0, row_8 = row; _r < row_8.length; _r++) {
+                var piece = row_8[_r];
                 dxf.add(piece);
             }
         }

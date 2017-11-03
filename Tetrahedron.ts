@@ -13,7 +13,7 @@ function tetrahedronPoly(): Polyhedron {
 
     result.splitEdge(new Segment(A, B), 2, 0);
 
-    return result;
+    return result.scale(1.2);
 }
 function tetrahedronPath(): Array<string> {
     return ["A D", "A A-B-0-2 B", "B, C"];

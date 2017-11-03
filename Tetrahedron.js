@@ -10,7 +10,7 @@ function tetrahedronPoly() {
         new Face([B, C, D])
     ]);
     result.splitEdge(new Segment(A, B), 2, 0);
-    return result;
+    return result.scale(1.2);
 }
 function tetrahedronPath() {
     return ["A D", "A A-B-0-2 B", "B, C"];
