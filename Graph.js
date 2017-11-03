@@ -50,4 +50,11 @@ var Graph = /** @class */ (function () {
     };
     return Graph;
 }());
+var GraphEdge = /** @class */ (function () {
+    function GraphEdge(from, to) {
+        this.from = from;
+        this.to = to;
+    }
+    return GraphEdge;
+}());
 //# sourceMappingURL=Graph.js.map

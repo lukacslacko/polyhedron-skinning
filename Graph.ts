@@ -45,3 +45,7 @@ class Graph {
         return result;
     }
 }
+
+class GraphEdge {
+    constructor(public from: GraphVertex, public to: GraphVertex) {}
+}

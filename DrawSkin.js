@@ -18,6 +18,7 @@ var Skin = /** @class */ (function () {
         this.chainCtx = chainCanvas.getContext("2d");
         this.chainCtx.font = "8px Arial";
         this.chainCtx.fillStyle = "red";
+        this.cutEdges = new Array();
     }
     Skin.prototype.find = function (names, points, poly) {
         for (var _i = 0, names_1 = names; _i < names_1.length; _i++) {
@@ -160,11 +161,12 @@ var Skin = /** @class */ (function () {
         var bottomRank = this.cutRank(bottom);
         var topRank = this.cutRank(top);
         if (bottomRank == rank)
-            return bottom.point;
+            return [bottom.point, bottom];
         if (topRank == rank)
-            return top.point;
+            return [top.point, top];
         var result = this.poly.splitEdge(new Segment(bottom.point, top.point), bottomRank - topRank, bottomRank - rank - 1);
-        return result;
+        var vertex = bottom.interpolate((bottomRank - rank) / (bottomRank - topRank), top, result);
+        return [result, vertex];
     };
     Skin.prototype.upperNeighbor = function (face, vertex) {
         var n = face.vertices.length;
@@ -192,6 +194,7 @@ var Skin = /** @class */ (function () {
         var rightVertex = maxVertex;
         var rank = maxRank;
         var result = new Array();
+        var cutEdges = new Array();
         var cnt = 0;
         do {
             var nextLeftVertex = this.upperNeighbor(f, leftVertex);
@@ -213,7 +216,8 @@ var Skin = /** @class */ (function () {
                 var leftTop = this.rankedPoint(leftVertex, nextLeftVertex, rank - 1);
                 var rightBottom = this.rankedPoint(rightVertex, nextRightVertex, rank);
                 var rightTop = this.rankedPoint(rightVertex, nextRightVertex, rank - 1);
-                var newFace = new CutFace(new Segment(leftBottom, leftTop), new Segment(rightBottom, rightTop));
+                var newFace = new CutFace(new Segment(leftBottom[0], leftTop[0]), new Segment(rightBottom[0], rightTop[0]));
+                cutEdges.push(new GraphEdge(leftBottom[1], rightBottom[1]), new GraphEdge(leftTop[1], rightTop[1]));
                 result.push(newFace);
                 --rank;
                 console.log("Added and rank", newFace.describe(), rank);
@@ -227,7 +231,7 @@ var Skin = /** @class */ (function () {
             var r = result_1[_b];
             console.log(r.describe());
         }
-        return result;
+        return [result, cutEdges];
     };
     Skin.prototype.cutAlong = function (cuts) {
         this.cuts = new Array();
@@ -238,13 +242,18 @@ var Skin = /** @class */ (function () {
         var cutFaces = new Array();
         for (var _a = 0, _b = this.graph.faces; _a < _b.length; _a++) {
             var f = _b[_a];
-            for (var _c = 0, _d = this.cutFace(f); _c < _d.length; _c++) {
+            var cutResult = this.cutFace(f);
+            for (var _c = 0, _d = cutResult[0]; _c < _d.length; _c++) {
                 var c = _d[_c];
                 cutFaces.push(c);
             }
+            for (var _e = 0, _f = cutResult[1]; _e < _f.length; _e++) {
+                var e = _f[_e];
+                this.cutEdges.push(e);
+            }
         }
-        for (var _e = 0, cutFaces_1 = cutFaces; _e < cutFaces_1.length; _e++) {
-            var c = cutFaces_1[_e];
+        for (var _g = 0, cutFaces_1 = cutFaces; _g < cutFaces_1.length; _g++) {
+            var c = cutFaces_1[_g];
             console.log(c.describe());
         }
         console.log(cutFaces.length);
@@ -266,8 +275,8 @@ var Skin = /** @class */ (function () {
                 }
             }
         }
-        for (var _f = 0, chainedFaces_1 = chainedFaces; _f < chainedFaces_1.length; _f++) {
-            var c = chainedFaces_1[_f];
+        for (var _h = 0, chainedFaces_1 = chainedFaces; _h < chainedFaces_1.length; _h++) {
+            var c = chainedFaces_1[_h];
             console.log(c.describe());
         }
         console.log(chainedFaces.length);
@@ -278,8 +287,8 @@ var Skin = /** @class */ (function () {
         var minY = 0;
         var maxX = 0;
         var maxY = 0;
-        for (var _g = 0, chainedFaces_2 = chainedFaces; _g < chainedFaces_2.length; _g++) {
-            var c = chainedFaces_2[_g];
+        for (var _j = 0, chainedFaces_2 = chainedFaces; _j < chainedFaces_2.length; _j++) {
+            var c = chainedFaces_2[_j];
             var planarFace = new PlanarFace(vert, orig, c);
             vert = planarFace.backVert.clone();
             orig = planarFace.bottomRight.clone();
@@ -292,8 +301,8 @@ var Skin = /** @class */ (function () {
         var dx = this.chainCanvas.width / (maxX - minX + 1);
         var dy = this.chainCanvas.height / (maxY - minY + 1);
         var d = Math.min(dx, dy);
-        for (var _h = 0, planarFaces_1 = planarFaces; _h < planarFaces_1.length; _h++) {
-            var p = planarFaces_1[_h];
+        for (var _k = 0, planarFaces_1 = planarFaces; _k < planarFaces_1.length; _k++) {
+            var p = planarFaces_1[_k];
             this.chainCtx.lineWidth = 3;
             this.chainCtx.strokeStyle = p.tabAtBottom ? "lightgreen" : "orange";
             this.line(this.chainCtx, p.bottomLeft, p.bottomRight, d, d, 0.25 - minX, 0.25 - minY);
@@ -346,15 +355,14 @@ var Skin = /** @class */ (function () {
             var height = piece.maxY - piece.minY + 5;
             var shiftX = -piece.minX + 5;
             var shiftY = -piece.minY + 5;
-            console.log("Piece " + i + " width " + width + " height " + height);
             if (x + width < pageWidth) {
                 row.push(piece.shift(x + shiftX, shiftY));
                 rowHeight = Math.max(rowHeight, height);
                 x += width;
             }
             else if (y + rowHeight < pageHeight) {
-                for (var _j = 0, row_1 = row; _j < row_1.length; _j++) {
-                    var piece_2 = row_1[_j];
+                for (var _l = 0, row_1 = row; _l < row_1.length; _l++) {
+                    var piece_2 = row_1[_l];
                     dxf.add(piece_2.shift(0, y));
                 }
                 x = 0;
@@ -370,8 +378,8 @@ var Skin = /** @class */ (function () {
                 dxf = new DXF();
                 y = 0;
                 x = 0;
-                for (var _k = 0, row_2 = row; _k < row_2.length; _k++) {
-                    var piece_3 = row_2[_k];
+                for (var _m = 0, row_2 = row; _m < row_2.length; _m++) {
+                    var piece_3 = row_2[_m];
                     dxf.add(piece_3);
                 }
                 rowHeight = height;
@@ -382,8 +390,8 @@ var Skin = /** @class */ (function () {
             }
         }
         if (y + rowHeight < pageHeight) {
-            for (var _l = 0, row_3 = row; _l < row_3.length; _l++) {
-                var piece = row_3[_l];
+            for (var _o = 0, row_3 = row; _o < row_3.length; _o++) {
+                var piece = row_3[_o];
                 dxf.add(piece.shift(0, y));
             }
         }
@@ -391,8 +399,8 @@ var Skin = /** @class */ (function () {
             document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));
             document.getElementById("download").appendChild(dxf.previewCanvas(pageWidth, pageHeight));
             dxf = new DXF();
-            for (var _m = 0, row_4 = row; _m < row_4.length; _m++) {
-                var piece = row_4[_m];
+            for (var _p = 0, row_4 = row; _p < row_4.length; _p++) {
+                var piece = row_4[_p];
                 dxf.add(piece);
             }
         }
@@ -434,15 +442,14 @@ var Skin = /** @class */ (function () {
             var height = piece.maxY - piece.minY + 5;
             var shiftX = -piece.minX + 5;
             var shiftY = -piece.minY + 5;
-            console.log("Piece " + i + " width " + width + " height " + height);
             if (x + width < pageWidth) {
                 row.push(piece.shift(x + shiftX, shiftY));
                 rowHeight = Math.max(rowHeight, height);
                 x += width;
             }
             else if (y + rowHeight < pageHeight) {
-                for (var _o = 0, row_5 = row; _o < row_5.length; _o++) {
-                    var piece_5 = row_5[_o];
+                for (var _q = 0, row_5 = row; _q < row_5.length; _q++) {
+                    var piece_5 = row_5[_q];
                     dxf.add(piece_5.shift(0, y));
                 }
                 x = 0;
@@ -458,8 +465,8 @@ var Skin = /** @class */ (function () {
                 dxf = new DXF();
                 y = 0;
                 x = 0;
-                for (var _p = 0, row_6 = row; _p < row_6.length; _p++) {
-                    var piece_6 = row_6[_p];
+                for (var _r = 0, row_6 = row; _r < row_6.length; _r++) {
+                    var piece_6 = row_6[_r];
                     dxf.add(piece_6);
                 }
                 rowHeight = height;
@@ -470,8 +477,8 @@ var Skin = /** @class */ (function () {
             }
         }
         if (y + rowHeight < pageHeight) {
-            for (var _q = 0, row_7 = row; _q < row_7.length; _q++) {
-                var piece = row_7[_q];
+            for (var _s = 0, row_7 = row; _s < row_7.length; _s++) {
+                var piece = row_7[_s];
                 dxf.add(piece.shift(0, y));
             }
         }
@@ -479,8 +486,8 @@ var Skin = /** @class */ (function () {
             document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));
             document.getElementById("download").appendChild(dxf.previewCanvas(pageWidth, pageHeight));
             dxf = new DXF();
-            for (var _r = 0, row_8 = row; _r < row_8.length; _r++) {
-                var piece = row_8[_r];
+            for (var _t = 0, row_8 = row; _t < row_8.length; _t++) {
+                var piece = row_8[_t];
                 dxf.add(piece);
             }
         }
@@ -497,13 +504,23 @@ var Skin = /** @class */ (function () {
                 this.line(this.ctx, f.vertices[j], f.vertices[i], this.dx, this.dy);
             }
         }
+        /*
         this.ctx.strokeStyle = "lightgreen";
         this.ctx.lineWidth = 3;
-        for (var _b = 0, _c = this.cuts; _b < _c.length; _b++) {
-            var cut = _c[_b];
+        for (let cut of this.cuts) {
             for (var i = 0; i < cut.length - 1; ++i) {
-                this.line(this.ctx, this.graph.find(cut[i]), this.graph.find(cut[i + 1]), this.dx, this.dy);
+                this.line(
+                    this.ctx,
+                    this.graph.find(cut[i]),
+                    this.graph.find(cut[i+1]), this.dx, this.dy);
             }
+        }
+        */
+        this.ctx.strokeStyle = "lightgreen";
+        this.ctx.lineWidth = 3;
+        for (var _b = 0, _c = this.cutEdges; _b < _c.length; _b++) {
+            var edge = _c[_b];
+            this.line(this.ctx, edge.from, edge.to, this.dx, this.dy);
         }
     };
     Skin.prototype.line = function (ctx, a, b, dx, dy, shiftX, shiftY) {

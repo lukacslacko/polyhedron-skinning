@@ -9,6 +9,9 @@ var GraphVertex = /** @class */ (function () {
     GraphVertex.prototype.describe = function () {
         return "(" + this.name + "=" + this.point.name + ")";
     };
+    GraphVertex.prototype.interpolate = function (factor, other, point) {
+        return new GraphVertex("", true, (1 - factor) * this.x + factor * other.x, (1 - factor) * this.y + factor * other.y, point);
+    };
     return GraphVertex;
 }());
 //# sourceMappingURL=GraphVertex.js.map

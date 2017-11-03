@@ -10,6 +10,7 @@ class Skin {
     private graph: Graph;
     private facesAdded: Face[];
     private cuts: Array<Array<string>>;
+    private cutEdges: GraphEdge[];
 
     constructor(
         cnv: HTMLCanvasElement,
@@ -32,6 +33,7 @@ class Skin {
         this.chainCtx = chainCanvas.getContext("2d");
         this.chainCtx.font = "8px Arial";
         this.chainCtx.fillStyle = "red";
+        this.cutEdges = new Array<GraphEdge>();
     }
 
     private find(names: string[], points: Point[], poly: Polyhedron): void {
@@ -161,16 +163,18 @@ class Skin {
         return -1;
     }
 
-    private rankedPoint(bottom: GraphVertex, top: GraphVertex, rank: number): Point {
+    private rankedPoint(bottom: GraphVertex, top: GraphVertex, rank: number): [Point, GraphVertex] {
         var bottomRank = this.cutRank(bottom); 
         var topRank = this.cutRank(top);
-        if (bottomRank == rank) return bottom.point;
-        if (topRank == rank) return top.point;
+        if (bottomRank == rank) return [bottom.point, bottom];
+        if (topRank == rank) return [top.point, top];
         let result = this.poly.splitEdge(
             new Segment(bottom.point, top.point),
             bottomRank - topRank, 
             bottomRank - rank - 1);
-        return result;
+        let vertex = bottom.interpolate(
+            (bottomRank - rank) / (bottomRank - topRank), top, result);
+        return [result, vertex];
     }
 
     private upperNeighbor(face: GraphFace, vertex: GraphVertex): GraphVertex {
@@ -182,7 +186,7 @@ class Skin {
         else return q;
     }
 
-    private cutFace(f: GraphFace): CutFace[] {
+    private cutFace(f: GraphFace): [CutFace[], GraphEdge[]] {
         console.log("Cutting " + f.describe());
         var maxRank = -1;
         var maxVertex: GraphVertex;
@@ -197,6 +201,7 @@ class Skin {
         var rightVertex = maxVertex;
         var rank = maxRank;
         var result = new Array<CutFace>();
+        let cutEdges = new Array<GraphEdge>();
         let cnt = 0;
         do {
             var nextLeftVertex = this.upperNeighbor(f, leftVertex);
@@ -218,7 +223,12 @@ class Skin {
                 var leftTop = this.rankedPoint(leftVertex, nextLeftVertex, rank - 1);
                 var rightBottom = this.rankedPoint(rightVertex, nextRightVertex, rank);
                 var rightTop = this.rankedPoint(rightVertex, nextRightVertex, rank - 1);
-                let newFace = new CutFace(new Segment(leftBottom, leftTop), new Segment(rightBottom, rightTop));
+                let newFace = new CutFace(
+                    new Segment(leftBottom[0], leftTop[0]),
+                    new Segment(rightBottom[0], rightTop[0]));
+                cutEdges.push(
+                    new GraphEdge(leftBottom[1], rightBottom[1]),
+                    new GraphEdge(leftTop[1], rightTop[1]));
                 result.push(newFace);
                 --rank;
                 console.log("Added and rank", newFace.describe(), rank);
@@ -227,7 +237,7 @@ class Skin {
             if (rank == rightNextRank) rightVertex = nextRightVertex;
         } while (leftVertex != rightVertex && ((cnt++) < 10));
         for (let r of result) console.log(r.describe());
-        return result;
+        return [result, cutEdges];
     }
 
     cutAlong(cuts: Array<string>): void {
@@ -237,8 +247,12 @@ class Skin {
         }
         var cutFaces = new Array<CutFace>();
         for (let f of this.graph.faces) {
-            for (let c of this.cutFace(f)) {
+            let cutResult = this.cutFace(f);
+            for (let c of cutResult[0]) {
                 cutFaces.push(c);
+            }
+            for (let e of cutResult[1]) {
+                this.cutEdges.push(e);
             }
         }
         for (let c of cutFaces) {
@@ -356,7 +370,6 @@ class Skin {
             let height = piece.maxY - piece.minY + 5;
             let shiftX = -piece.minX + 5;
             let shiftY = -piece.minY + 5;
-            console.log("Piece " + i + " width " + width + " height " + height);
             if (x + width < pageWidth) {
                 row.push(piece.shift(x + shiftX, shiftY));
                 rowHeight = Math.max(rowHeight, height);
@@ -439,7 +452,6 @@ class Skin {
             let height = piece.maxY - piece.minY + 5;
             let shiftX = -piece.minX + 5;
             let shiftY = -piece.minY + 5;
-            console.log("Piece " + i + " width " + width + " height " + height);
             if (x + width < pageWidth) {
                 row.push(piece.shift(x + shiftX, shiftY));
                 rowHeight = Math.max(rowHeight, height);
@@ -495,12 +507,22 @@ class Skin {
                 this.line(this.ctx, f.vertices[j], f.vertices[i], this.dx, this.dy);
             }
         }
+        /*
         this.ctx.strokeStyle = "lightgreen";
         this.ctx.lineWidth = 3;
         for (let cut of this.cuts) {
             for (var i = 0; i < cut.length - 1; ++i) {
-                this.line(this.ctx, this.graph.find(cut[i]), this.graph.find(cut[i+1]), this.dx, this.dy);
+                this.line(
+                    this.ctx,
+                    this.graph.find(cut[i]), 
+                    this.graph.find(cut[i+1]), this.dx, this.dy);
             }
+        }
+        */
+        this.ctx.strokeStyle = "lightgreen";
+        this.ctx.lineWidth = 3;
+        for (let edge of this.cutEdges) {
+            this.line(this.ctx, edge.from, edge.to, this.dx, this.dy);
         }
     }
 
