@@ -43,6 +43,7 @@ class Skin {
     }
 
     private addFace(face: Face, side: number): void {
+        if (this.facesAdded.indexOf(face) != -1) return;
         console.log("Adding face " + face.describe() + " side " + side);
         this.facesAdded.push(face);
         var graphFace = new GraphFace();
@@ -258,11 +259,14 @@ class Skin {
         for (let c of cutFaces) {
             console.log(c.describe());
         }
-        
+
+        if (cuts.length == 0) return;
+
         console.log(cutFaces.length);
         let chainedFaces = new Array<CutFace>();
         chainedFaces.push(cutFaces.pop());
-        while (cutFaces.length > 0) {
+        let numFaces = cutFaces.length;
+        for (let cnt = 0; cnt < numFaces; ++cnt) {
             let lastEdge = chainedFaces[chainedFaces.length-1].front;
             for (let i = 0; i < cutFaces.length; ++i) {
                 let f = cutFaces[i];
@@ -282,6 +286,9 @@ class Skin {
             console.log(c.describe());
         }
         console.log(chainedFaces.length);
+        for (let c of cutFaces) {
+            console.log("Remaining " + c.describe());
+        }
         
         let planarFaces = new Array<PlanarFace>();
         let vert = new PlanarPoint(0, 1);
@@ -507,18 +514,6 @@ class Skin {
                 this.line(this.ctx, f.vertices[j], f.vertices[i], this.dx, this.dy);
             }
         }
-        /*
-        this.ctx.strokeStyle = "lightgreen";
-        this.ctx.lineWidth = 3;
-        for (let cut of this.cuts) {
-            for (var i = 0; i < cut.length - 1; ++i) {
-                this.line(
-                    this.ctx,
-                    this.graph.find(cut[i]), 
-                    this.graph.find(cut[i+1]), this.dx, this.dy);
-            }
-        }
-        */
         this.ctx.strokeStyle = "lightgreen";
         this.ctx.lineWidth = 3;
         for (let edge of this.cutEdges) {
