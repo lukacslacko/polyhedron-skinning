@@ -1,11 +1,13 @@
 var DXF = /** @class */ (function () {
     function DXF() {
         this.lines = new Array();
+        this.dxfLines = new Array();
         this.lines.push("0", "SECTION", "2", "ENTITIES");
     }
     DXF.prototype.add = function (piece) {
         for (var _i = 0, _a = piece.lines; _i < _a.length; _i++) {
             var line = _a[_i];
+            this.dxfLines.push(line);
             this.line(line.x1, line.y1, line.x2, line.y2);
         }
     };
@@ -21,6 +23,27 @@ var DXF = /** @class */ (function () {
         result.innerHTML = filename;
         result.setAttribute("download", filename);
         result.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(this.content()));
+        return result;
+    };
+    DXF.prototype.previewCanvas = function (width, height) {
+        var result = document.createElement("canvas");
+        result.setAttribute("width", "" + width);
+        result.setAttribute("height", "" + height);
+        var ctx = result.getContext("2d");
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, height - 1);
+        ctx.lineTo(width - 1, height - 1);
+        ctx.lineTo(width - 1, 0);
+        ctx.lineTo(0, 0);
+        ctx.stroke();
+        for (var _i = 0, _a = this.dxfLines; _i < _a.length; _i++) {
+            var line = _a[_i];
+            ctx.beginPath();
+            ctx.moveTo(line.x1, line.y1);
+            ctx.lineTo(line.x2, line.y2);
+            ctx.stroke();
+        }
         return result;
     };
     return DXF;

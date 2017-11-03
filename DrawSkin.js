@@ -366,7 +366,7 @@ var Skin = /** @class */ (function () {
             }
             else {
                 document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));
-                document.getElementById("download").appendChild(document.createElement("br"));
+                document.getElementById("download").appendChild(dxf.previewCanvas(pageWidth, pageHeight));
                 dxf = new DXF();
                 y = 0;
                 x = 0;
@@ -389,7 +389,7 @@ var Skin = /** @class */ (function () {
         }
         else {
             document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));
-            document.getElementById("download").appendChild(document.createElement("br"));
+            document.getElementById("download").appendChild(dxf.previewCanvas(pageWidth, pageHeight));
             dxf = new DXF();
             for (var _m = 0, row_4 = row; _m < row_4.length; _m++) {
                 var piece = row_4[_m];
@@ -397,6 +397,7 @@ var Skin = /** @class */ (function () {
             }
         }
         document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));
+        document.getElementById("download").appendChild(dxf.previewCanvas(pageWidth, pageHeight));
     };
     Skin.prototype.draw = function () {
         this.ctx.strokeStyle = "black";

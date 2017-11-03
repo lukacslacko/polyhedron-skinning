@@ -1,12 +1,15 @@
 class DXF {
     lines: Array<string>;
+    dxfLines: Array<DXFLine>;
     constructor() {
         this.lines = new Array<string>();
+        this.dxfLines = new Array<DXFLine>();
         this.lines.push("0", "SECTION", "2", "ENTITIES");
     }
 
     add(piece: DXFModule): void {
         for (let line of piece.lines) {
+            this.dxfLines.push(line);
             this.line(line.x1, line.y1, line.x2, line.y2);
         }
     }
@@ -28,6 +31,27 @@ class DXF {
         result.innerHTML = filename;
         result.setAttribute("download", filename);
         result.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(this.content()));
+        return result;
+    }
+
+    previewCanvas(width: number, height: number): HTMLCanvasElement {
+        let result = document.createElement("canvas");
+        result.setAttribute("width", "" + width);
+        result.setAttribute("height", "" + height);
+        let ctx = result.getContext("2d");
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, height - 1);
+        ctx.lineTo(width - 1, height - 1);
+        ctx.lineTo(width - 1, 0);
+        ctx.lineTo(0, 0);
+        ctx.stroke();
+        for (let line of this.dxfLines) {
+            ctx.beginPath();
+            ctx.moveTo(line.x1, line.y1);
+            ctx.lineTo(line.x2, line.y2);
+            ctx.stroke();
+        } 
         return result;
     }
 }

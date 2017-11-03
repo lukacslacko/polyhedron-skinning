@@ -373,7 +373,7 @@ class Skin {
                 x = width;
             } else {
                 document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));        
-                document.getElementById("download").appendChild(document.createElement("br"));
+                document.getElementById("download").appendChild(dxf.previewCanvas(pageWidth, pageHeight));
                 dxf = new DXF();
                 y = 0;
                 x = 0;
@@ -393,13 +393,14 @@ class Skin {
             }
         } else {
             document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));        
-            document.getElementById("download").appendChild(document.createElement("br"));
+            document.getElementById("download").appendChild(dxf.previewCanvas(pageWidth, pageHeight));
             dxf = new DXF();
             for (let piece of row) {
                 dxf.add(piece);
             }
         }
         document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));        
+        document.getElementById("download").appendChild(dxf.previewCanvas(pageWidth, pageHeight));
     }
 
     draw(): void {
