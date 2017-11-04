@@ -1,0 +1,49 @@
+<html>
+        <head>
+            <meta charset=utf-8>
+            <title>Icosahedron</title>
+            <style>
+            body { 
+                margin: 0; 
+                padding: 0;
+                background: #fff;
+            }
+            </style>
+        </head>
+        
+        <body>
+            <div id="download"></div>            
+            <canvas id="cnv" 
+            width="500"
+            height="500"
+            onmousedown="canvasDrag();"
+            onmouseup="canvasStopDrag();"
+            onwheel="canvasWheel();"></canvas>
+          <canvas id="skin"
+            width="800"
+            height="500"></canvas>
+          <canvas id="chain" width="500" height="500"></canvas>
+          <script src="DXF.js"></script>
+          <script src="LinearSolver.js"></script>
+          <script src="file:///C:/Users/lukac/OneDrive/Documents/three.js"></script>
+          <script src="https://web.cs.elte.hu/~papjuli/three.js"></script>
+          <script src="https://web.cs.elte.hu/~papjuli/TrackballControls.js"></script>
+          <script src="3D.js"></script>
+          <script src="Point.js"></script>
+          <script src="Segment.js"></script>
+          <script src="Face.js"></script>
+          <script src="Polyhedron.js"></script>
+          <script src="CutFace.js"></script>
+          <script src="PlanarPoint.js"></script>
+          <script src="PlanarFace.js"></script>
+          <script src="Icosahedron.js"></script>
+          <script src="Gyrobifastigium.js"></script>
+          <script src="Octahedron.js"></script>
+          <script src="GraphVertex.js"></script>
+          <script src="GraphFace.js"></script>
+          <script src="Graph.js"></script>
+          <script src="DrawSkin.js"></script>
+          <script src="MainGyrobifastigium.js"></script>
+        </body>
+    </html>
+        
