@@ -1,0 +1,32 @@
+function triangularPrismPoly(): Polyhedron {
+    var A = new Point(-1, -1, 0, "A");
+    var B = new Point(-1, 1, 0, "B");
+    var C = new Point(1, 1, 0, "C");
+    var D = new Point(1, -1, 0, "D");
+    var P = new Point(-1, 0, Math.sqrt(3), "P");
+    var Q = new Point(1, 0, Math.sqrt(3), "Q");
+
+    let result = new Polyhedron([
+        new Face([A, B, C, D]),
+        new Face([B, C, Q, P]),
+        new Face([A, P, Q, D]),
+        new Face([Q, C, D]),
+        new Face([A, P, B])
+    ]);
+
+    result.splitEdge(new Segment(A, D), 2, 0);
+
+    return result;
+}
+function triangularPrismPath(): Array<string> {
+    return ["A P", "A A-D-0-2 D", "D C"];
+}
+
+function triangularPrismCuts(): Array<string> {
+    return [
+        "A>", 
+        "A-D-0-2> P", 
+        "D> B Q A<", 
+        "C A-D-0-2<", 
+        "D<"];
+}
