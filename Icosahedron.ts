@@ -36,21 +36,19 @@ function icosahedronPoly(): Polyhedron {
         new Face([e, B, C])
     ]);
 
-    poly.splitEdge(new Segment(A, d), 2, 0);
-    
     return poly.scale(1.5);
 }
 function icosahedronPath(): Array<string> {
-    return ["P E", "P A A-d-0-2 d p", "p e"];
+    return ["P E", "P A d p", "p e"];
 }
 
 function icosahedronCuts(): Array<string> {
     return [
         "P<",
         "A< E",
-        "A-d-0-2< B D P>",
+        "B D P>",
         "d< C b A>",
-        "p< a c A-d-0-2>",
+        "p< a c",
         "e d>",
         "p>"];
 }

@@ -19,20 +19,18 @@ function gyrobifastigiumPoly(): Polyhedron {
         new Face([C, D, F])
     ]);
 
-    result.splitEdge(new Segment(E, F), 3, 0);
-
     return result;
 }
 function gyrobifastigiumPath(): Array<string> {
-    return ["E A", "E E-F-0-3 E-F-1-3 F", "F C"];
+    return ["E A", "E F", "F C"];
 }
 
 function gyrobifastigiumCuts(): Array<string> {
     return [
         "E>", 
-        "E-F-0-3> A", 
-        "E-F-1-3> B G E<", 
-        "F> H D E-F-0-3<", 
-        "C E-F-1-3<", 
+        "A", 
+        "B G E<", 
+        "F> H D", 
+        "C", 
         "F<"];
 }

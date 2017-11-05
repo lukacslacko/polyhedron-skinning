@@ -14,19 +14,17 @@ function triangularPrismPoly(): Polyhedron {
         new Face([A, P, B])
     ]);
 
-    result.splitEdge(new Segment(A, D), 2, 0);
-
     return result;
 }
 function triangularPrismPath(): Array<string> {
-    return ["A P", "A A-D-0-2 D", "D C"];
+    return ["A P", "A D", "D C"];
 }
 
 function triangularPrismCuts(): Array<string> {
     return [
         "A>", 
-        "A-D-0-2> P", 
+        "P", 
         "D> B Q A<", 
-        "C A-D-0-2<", 
+        "C", 
         "D<"];
 }

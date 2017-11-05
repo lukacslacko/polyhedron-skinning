@@ -36,29 +36,24 @@ function dodecahedronPoly(): Polyhedron {
         new Face([G, GH, H, EH, FG]),
         new Face([E, EH, H, DH, AE])
     ]);
-
-    
-    result.splitEdge(new Segment(E, AE), 2, 0);
-    //result.splitEdge(new Segment(AE, A), 2, 0);
-    result.splitEdge(new Segment(A, AD), 2, 0);
     
     return result;
 }
 
 function dodecahedronPath(): Array<string> {
-    return ["E EF F", "E E-AE-0-2 AE A A-AD-0-2 AD", "AD D CD"];
+    return ["E EF F", "E AE A AD", "AD D CD"];
 }
 
 function dodecahedronCuts(): Array<string> {
     return [
         "E>", 
-        "E-AE-0-2> EF>", 
+        "EF>", 
         "AE> EH F", 
         "A> FG BF EF<", 
-        "A-AD-0-2> DH CG B E<", 
-        "AD> H G AB E-AE-0-2<", 
+        "DH CG B E<", 
+        "AD> H G AB", 
         "D> GH C AE<", 
         "CD BC A<", 
-        "D< A-AD-0-2<", 
+        "D<", 
         "AD<"];
 }

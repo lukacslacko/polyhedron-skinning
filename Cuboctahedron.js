@@ -27,29 +27,19 @@ function cuboctahedronPoly() {
         new Face([A, D, X]),
         new Face([P, S, X])
     ]);
-    result.splitEdge(new Segment(P, X), 2, 0);
     return result;
 }
 function cuboctahedronPath() {
-    // return ["R W", "R S X A B", "B Y"];
-    return ["P Q R", "P P-X-0-2 X A", "A B C"];
+    return ["P Q R", "P X A", "A B C"];
 }
 function cuboctahedronCuts() {
-    /* return [
-        "R<",
-        "S< W",
-        "X< Q R>",
-        "A< P Z D S>",
-        "B< C X>",
-        "Y A>",
-        "B>"]; */
     return [
         "P<",
-        "P-X-0-2< S Q<",
+        "S Q<",
         "X< R",
         "A< W Q>",
         "B< D Z P>",
-        "C Y P-X-0-2>",
+        "C Y",
         "B> X>",
         "A>"
     ];
