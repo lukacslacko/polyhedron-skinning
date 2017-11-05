@@ -9,13 +9,12 @@ function tetrahedronPoly() {
         new Face([A, C, D]),
         new Face([B, C, D])
     ]);
-    result.splitEdge(new Segment(A, B), 2, 0);
     return result.scale(1.2);
 }
 function tetrahedronPath() {
-    return ["A D", "A A-B-0-2 B", "B, C"];
+    return ["A D", "A B", "B, C"];
 }
 function tetrahedronCuts() {
-    return ["A>", "A-B-0-2> D", "B> A<", "C A-B-0-2<", "B<"];
+    return ["A>", "D", "B> A<", "C", "B<"];
 }
 //# sourceMappingURL=Tetrahedron.js.map
