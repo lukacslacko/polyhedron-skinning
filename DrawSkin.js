@@ -324,184 +324,69 @@ var Skin = /** @class */ (function () {
             console.log(p.describe());
         }
         console.log(planarFaces.length);
-        var dxf = new DXF();
-        var row = new Array();
-        var x = 0;
-        var y = 0;
-        var rowHeight = 0;
+        var rotations = new Array();
+        for (var rotAng = 0; rotAng <= 180; rotAng += 5) {
+            rotations.push(new PlanarPoint(Math.cos(rotAng * Math.PI / 180), Math.sin(rotAng * Math.PI / 180)));
+        }
+        var findBestPiece = function (pieces, direction) {
+            var minWidth = pieces[0].maxX - pieces[0].minX;
+            var minPiece = pieces[0];
+            for (var j = 1; j < pieces.length; ++j) {
+                var width = pieces[j].maxX - pieces[j].minX;
+                if (direction * (width - minWidth) > 0) {
+                    minWidth = width;
+                    minPiece = pieces[j];
+                }
+            }
+            return minPiece;
+        };
         var pageWidth = 200;
         var pageHeight = 270;
-        var page = 0;
+        var div = document.getElementById("download");
+        var layout = new Layout(pageWidth, pageHeight);
         for (var i = 0; i < chainedFaces.length; ++i) {
             var left = chainedFaces[i];
             var right = chainedFaces[(i + 1) % chainedFaces.length];
-            var rotations = new Array();
-            for (var rotAng = 0; rotAng <= 180; rotAng += 5) {
-                rotations.push(new PlanarPoint(Math.cos(rotAng * Math.PI / 180), Math.sin(rotAng * Math.PI / 180)));
-            }
             var pieces = new Array();
             for (var j = 0; j < rotations.length; ++j) {
                 var vert_1 = rotations[j];
                 var orig_1 = new PlanarPoint(0, 0);
                 var leftPlanar = new PlanarFace(vert_1, orig_1, left);
                 var rightPlanar = new PlanarFace(leftPlanar.backVert, leftPlanar.bottomRight, right);
-                var piece_1 = new DXFModule();
-                leftPlanar.render(piece_1, true);
-                rightPlanar.render(piece_1, false);
-                pieces.push(piece_1);
+                var piece = new DXFModule();
+                leftPlanar.render(piece, true);
+                rightPlanar.render(piece, false);
+                pieces.push(piece);
             }
-            var minWidth = pieces[0].maxX - pieces[0].minX;
-            var minPiece = pieces[0];
-            for (var j = 1; j < pieces.length; ++j) {
-                var width_1 = pieces[j].maxX - pieces[j].minX;
-                if (width_1 < minWidth) {
-                    minWidth = width_1;
-                    minPiece = pieces[j];
-                }
-            }
-            var piece = minPiece;
-            var width = piece.maxX - piece.minX + 5;
-            var height = piece.maxY - piece.minY + 5;
-            var shiftX = -piece.minX + 5;
-            var shiftY = -piece.minY + 5;
-            if (x + width < pageWidth) {
-                row.push(piece.shift(x + shiftX, shiftY));
-                rowHeight = Math.max(rowHeight, height);
-                x += width;
-            }
-            else if (y + rowHeight < pageHeight) {
-                for (var _m = 0, row_1 = row; _m < row_1.length; _m++) {
-                    var piece_2 = row_1[_m];
-                    dxf.add(piece_2.shift(0, y));
-                }
-                x = 0;
-                y += rowHeight;
-                rowHeight = height;
-                row = new Array();
-                row.push(piece.shift(x + shiftX, shiftY));
-                x = width;
-            }
-            else {
-                document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));
-                document.getElementById("download").appendChild(dxf.previewCanvas(pageWidth, pageHeight));
-                dxf = new DXF();
-                y = 0;
-                x = 0;
-                for (var _o = 0, row_2 = row; _o < row_2.length; _o++) {
-                    var piece_3 = row_2[_o];
-                    dxf.add(piece_3);
-                }
-                rowHeight = height;
-                row = new Array();
-                row.push(piece.shift(shiftX, shiftY));
-                x = width;
-                y = rowHeight;
-            }
+            layout.add(findBestPiece(pieces, -1));
         }
-        if (y + rowHeight < pageHeight) {
-            for (var _p = 0, row_3 = row; _p < row_3.length; _p++) {
-                var piece = row_3[_p];
-                dxf.add(piece.shift(0, y));
-            }
+        var pageNumber = 0;
+        for (var _m = 0, _o = layout.save(); _m < _o.length; _m++) {
+            var page = _o[_m];
+            div.appendChild(page.downloadLink("page" + (++pageNumber) + ".dxf"));
+            div.appendChild(page.previewCanvas(pageWidth, pageHeight));
         }
-        else {
-            document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));
-            document.getElementById("download").appendChild(dxf.previewCanvas(pageWidth, pageHeight));
-            dxf = new DXF();
-            for (var _q = 0, row_4 = row; _q < row_4.length; _q++) {
-                var piece = row_4[_q];
-                dxf.add(piece);
-            }
-        }
-        document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));
-        document.getElementById("download").appendChild(dxf.previewCanvas(pageWidth, pageHeight));
-        document.getElementById("download").appendChild(document.createElement("br"));
-        dxf = new DXF();
-        row = new Array();
-        x = 0;
-        y = 0;
-        rowHeight = 0;
-        page = 0;
+        div.appendChild(document.createElement("br"));
+        layout = new Layout(pageWidth, pageHeight);
         for (var i = 0; i < chainedFaces.length; ++i) {
             var face = chainedFaces[i];
-            var rotations = new Array();
-            for (var rotAng = 0; rotAng <= 180; rotAng += 5) {
-                rotations.push(new PlanarPoint(Math.cos(rotAng * Math.PI / 180), Math.sin(rotAng * Math.PI / 180)));
-            }
             var pieces = new Array();
             for (var j = 0; j < rotations.length; ++j) {
                 var vert_2 = rotations[j];
                 var orig_2 = new PlanarPoint(0, 0);
                 var planar = new PlanarFace(vert_2, orig_2, face);
-                var piece_4 = new DXFModule();
-                planar.cover(piece_4);
-                pieces.push(piece_4);
+                var piece = new DXFModule();
+                planar.cover(piece);
+                pieces.push(piece);
             }
-            var minWidth = pieces[0].maxX - pieces[0].minX;
-            var minPiece = pieces[0];
-            for (var j = 1; j < pieces.length; ++j) {
-                var width_2 = pieces[j].maxX - pieces[j].minX;
-                if (width_2 < minWidth) {
-                    minWidth = width_2;
-                    minPiece = pieces[j];
-                }
-            }
-            var piece = minPiece;
-            var width = piece.maxX - piece.minX + 5;
-            var height = piece.maxY - piece.minY + 5;
-            var shiftX = -piece.minX + 5;
-            var shiftY = -piece.minY + 5;
-            if (x + width < pageWidth) {
-                row.push(piece.shift(x + shiftX, shiftY));
-                rowHeight = Math.max(rowHeight, height);
-                x += width;
-            }
-            else if (y + rowHeight < pageHeight) {
-                for (var _r = 0, row_5 = row; _r < row_5.length; _r++) {
-                    var piece_5 = row_5[_r];
-                    dxf.add(piece_5.shift(0, y));
-                }
-                x = 0;
-                y += rowHeight;
-                rowHeight = height;
-                row = new Array();
-                row.push(piece.shift(x + shiftX, shiftY));
-                x = width;
-            }
-            else {
-                document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));
-                document.getElementById("download").appendChild(dxf.previewCanvas(pageWidth, pageHeight));
-                dxf = new DXF();
-                y = 0;
-                x = 0;
-                for (var _s = 0, row_6 = row; _s < row_6.length; _s++) {
-                    var piece_6 = row_6[_s];
-                    dxf.add(piece_6);
-                }
-                rowHeight = height;
-                row = new Array();
-                row.push(piece.shift(shiftX, shiftY));
-                x = width;
-                y = rowHeight;
-            }
+            layout.add(findBestPiece(pieces, 1));
         }
-        if (y + rowHeight < pageHeight) {
-            for (var _t = 0, row_7 = row; _t < row_7.length; _t++) {
-                var piece = row_7[_t];
-                dxf.add(piece.shift(0, y));
-            }
+        pageNumber = 0;
+        for (var _p = 0, _q = layout.save(); _p < _q.length; _p++) {
+            var page = _q[_p];
+            div.appendChild(page.downloadLink("page" + (++pageNumber) + ".dxf"));
+            div.appendChild(page.previewCanvas(pageWidth, pageHeight));
         }
-        else {
-            document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));
-            document.getElementById("download").appendChild(dxf.previewCanvas(pageWidth, pageHeight));
-            dxf = new DXF();
-            for (var _u = 0, row_8 = row; _u < row_8.length; _u++) {
-                var piece = row_8[_u];
-                dxf.add(piece);
-            }
-        }
-        document.getElementById("download").appendChild(dxf.downloadLink("page" + (++page) + ".dxf"));
-        document.getElementById("download").appendChild(dxf.previewCanvas(pageWidth, pageHeight));
     };
     Skin.prototype.draw = function () {
         this.ctx.strokeStyle = "black";

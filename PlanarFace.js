@@ -53,12 +53,12 @@ var PlanarFace = /** @class */ (function () {
             this.line(dxf, this.bottomLeft, this.bottomRight, false);
         if (this.topLeft != this.topRight)
             this.line(dxf, this.topLeft, this.topRight, false);
-        var leftUnit = this.bottomLeft.unitVectorTo(this.topLeft).times(0.05);
+        var leftUnit = this.bottomLeft.unitVectorTo(this.topLeft).times(0.03);
         var leftInset = this.horiz(leftUnit);
         var leftStart = this.bottomLeft.plus(leftInset).plus(leftUnit.times(-2));
         var leftEnd = this.topLeft.plus(leftInset).plus(leftUnit.times(2));
         this.line(dxf, leftStart, leftEnd, false);
-        var rightUnit = this.bottomRight.unitVectorTo(this.topRight).times(0.05);
+        var rightUnit = this.bottomRight.unitVectorTo(this.topRight).times(0.03);
         var rightInset = this.horiz(rightUnit).times(-1);
         var rightStart = this.bottomRight.plus(rightInset).plus(rightUnit.times(-2));
         var rightEnd = this.topRight.plus(rightInset).plus(rightUnit.times(2));
@@ -89,7 +89,7 @@ var PlanarFace = /** @class */ (function () {
         }
     };
     PlanarFace.prototype.scaledLine = function (dxf, a, b) {
-        var scale = 20;
+        var scale = 60;
         dxf.line(a.x * scale, a.y * scale, b.x * scale, b.y * scale);
     };
     PlanarFace.prototype.tab = function (dxf, a, b, tabAtBottom, bottom) {
@@ -98,7 +98,7 @@ var PlanarFace = /** @class */ (function () {
         var w = this.horiz(v);
         if (!tabAtBottom)
             w = w.times(-1);
-        var gap = tabAtBottom == bottom ? 0.3 : 0.31;
+        var gap = tabAtBottom == bottom ? 0.46 : 0.5;
         this.scaledLine(dxf, a, a.plus(v.times((d - gap) / 2)));
         this.scaledLine(dxf, b, b.plus(v.times(-(d - gap) / 2)));
         var r = gap / 2;

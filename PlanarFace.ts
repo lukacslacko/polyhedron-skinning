@@ -59,12 +59,12 @@ class PlanarFace {
     cover(dxf: DXFModule): void {
         if (this.bottomLeft != this.bottomRight) this.line(dxf, this.bottomLeft, this.bottomRight, false);
         if (this.topLeft != this.topRight) this.line(dxf, this.topLeft, this.topRight, false);
-        let leftUnit = this.bottomLeft.unitVectorTo(this.topLeft).times(0.05);
+        let leftUnit = this.bottomLeft.unitVectorTo(this.topLeft).times(0.03);
         let leftInset = this.horiz(leftUnit);
         let leftStart = this.bottomLeft.plus(leftInset).plus(leftUnit.times(-2));
         let leftEnd = this.topLeft.plus(leftInset).plus(leftUnit.times(2));
         this.line(dxf, leftStart, leftEnd, false);
-        let rightUnit = this.bottomRight.unitVectorTo(this.topRight).times(0.05);
+        let rightUnit = this.bottomRight.unitVectorTo(this.topRight).times(0.03);
         let rightInset = this.horiz(rightUnit).times(-1);
         let rightStart = this.bottomRight.plus(rightInset).plus(rightUnit.times(-2));
         let rightEnd = this.topRight.plus(rightInset).plus(rightUnit.times(2));
@@ -98,7 +98,7 @@ class PlanarFace {
     }
 
     private scaledLine(dxf: DXFModule, a: PlanarPoint, b: PlanarPoint): void {
-        let scale = 20;
+        let scale = 60;
         dxf.line(a.x * scale, a.y * scale, b.x * scale, b.y * scale);
     }
 
@@ -107,7 +107,7 @@ class PlanarFace {
         let v = a.unitVectorTo(b);
         let w = this.horiz(v);
         if (!tabAtBottom) w = w.times(-1);
-        let gap = tabAtBottom == bottom ? 0.3 : 0.31;
+        let gap = tabAtBottom == bottom ? 0.46 : 0.5;
         this.scaledLine(dxf, a, a.plus(v.times((d-gap) / 2)));
         this.scaledLine(dxf, b, b.plus(v.times(-(d-gap) / 2)));
         let r = gap / 2;
